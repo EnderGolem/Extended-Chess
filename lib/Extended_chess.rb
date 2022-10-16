@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "Extended_chess/version"
-
+require 'colorize'
 module ExtendedChess
-  class Error < StandardError; end
-  # Your code goes here...
+
+  puts "blue".colorize(:white)
+  puts "red".colorize(:black)
+
 end
