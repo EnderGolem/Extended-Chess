@@ -1,7 +1,10 @@
 class Spawner
 
-  def initialize(startPos,dir)
+  attr_reader :startPos, :up_dir, :right_dir
+
+  def initialize(startPos, up_dir, right_dir)
     @startPos = startPos
-    @dir = dir
+    @up_dir = up_dir
+    @right_dir = right_dir
   end
 end
