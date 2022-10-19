@@ -14,22 +14,16 @@ class Mode
     puts "!!!!#{@board.matrix}"
     chess = Chess.new
     setups.each_index do |ind|
-      i=j=0
-      #cur_pos = @spawn[ind].startPos
-      puts "*****#{setups[ind].placement[0].length}"
+      i = j = 0
       setups[ind].placement.each do |line|
         line.each do |pName|
-          cur_pos=@spawn[ind].startPos + j*@spawn[ind].right_dir + i*@spawn[ind].up_dir
-
-          @board.matrix[cur_pos[0]][cur_pos[1]] = (pName == nil)? 0 :
+          cur_pos = @spawn[ind].startPos + j * @spawn[ind].right_dir + i * @spawn[ind].up_dir
+          @board.matrix[cur_pos[0]][cur_pos[1]] = (pName == nil) ? 0 :
             Piece.new(cur_pos,nil,players[ind].color,@spawn[ind].up_dir,chess.pieces[pName])
-            puts "&&&&&&#{cur_pos}"
-            j+=1
-            puts "#{cur_pos}"
-          #puts @board.matrix
+            j += 1
         end
-        j=0
-        i+=1
+        j = 0
+        i += 1
       end
     end
     position = Position.new(@board)

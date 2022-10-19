@@ -9,7 +9,7 @@ class PieceDescription
   def initialize(name, notation_name, char_name, rules)
     @name = name
     @notation_name = notation_name
-    @char_name =char_name
+    @char_name = char_name
     @rules = rules
   end
 end

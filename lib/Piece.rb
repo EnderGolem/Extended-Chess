@@ -17,7 +17,7 @@ class Piece
   def calculatePossibleMoves(position)
     moves = Array.new
     @piece_description.rules.each do |rule|
-      moves+=rule.call(self,position)
+      moves += rule.call(self,position)
     end
     return moves
   end
