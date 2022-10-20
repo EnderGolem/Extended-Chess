@@ -32,7 +32,7 @@ class Chess
       @boards['FFA'] = Board.new(ffa)
 
       @movement_rules = Hash.new
-      movement_rules['step_forward'] = method(:step_forward)
+      movement_rules['step_forward'] = method(:step_forward) # Maybe:   movement_rules['step_forward'] = step_forward()  and step_forward(without arg)
 
       @pieces = Hash.new
       @pieces['Pawn'] = PieceDescription.new("Pawn","","p",[movement_rules['step_forward']])
@@ -54,7 +54,19 @@ class Chess
     end
 
   def step_forward(piece,position)
-    return [Move.new('e2-e3')]
+    return [Move.new('e2-e3',[method(:can_step_forward?)])]
   end
-
+  def can_step_forward?(start, maybe_finish, dir)
+    start[0] += dir[0]
+    start[1] += dir[1]
+    if(start == maybe_finish)
+      start[0] -= dir[0]
+      start[1] -= dir[1]
+      return  true
+    end
+    start[0] -= dir[0]
+    start[1] -= dir[1]
+    return  false
+    end
 end
+
