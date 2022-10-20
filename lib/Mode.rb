@@ -11,7 +11,6 @@ class Mode
   end
   # Создает игру в выбранном режиме с конкретными игроками, сетапами и параметрами
   def make_game(players,setups)
-    puts "!!!!#{@board.matrix}"
     chess = Chess.new
     setups.each_index do |ind|
       i = j = 0

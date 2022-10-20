@@ -5,6 +5,7 @@ require_relative 'Position'
 require_relative 'Chess'
 require_relative 'Move'
 require_relative 'Player'
+require_relative 'Board'
 
 def f
   [Move.new("e2-e3"), Move.new("e2-e4")]
@@ -21,5 +22,7 @@ module ExtendedChess
   player1 = Player.new('Alex',:red)
   player2 = Player.new('Max',:blue)
   game = mode.make_game([player1,player2],[chess.setups['Classic'],chess.setups['Classic']])
+  game.position.print_board
+  game.step!([6,2], [5,2])
   game.position.print_board
 end
