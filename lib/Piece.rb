@@ -14,6 +14,7 @@ class Piece
     @data = Hash.new
   end
 
+  #position - Position
   def calculatePossibleMoves(position)
     moves = Array.new
     @piece_description.rules.each do |rule|
