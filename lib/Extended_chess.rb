@@ -6,6 +6,7 @@ require_relative 'Chess'
 require_relative 'Move'
 require_relative 'Player'
 require_relative 'Board'
+require_relative 'Helpers/notation_translation_helper'
 
 def f
   [Move.new("e2-e3"), Move.new("e2-e4")]
@@ -25,4 +26,6 @@ module ExtendedChess
   game.position.print_board
   game.step!([6,2], [5,2])
   game.position.print_board
+  puts NotationTranslationHelper.array_to_notation([5,2]);
+  puts NotationTranslationHelper.notation_to_array('c6');
 end
