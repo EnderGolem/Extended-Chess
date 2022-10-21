@@ -9,7 +9,7 @@ class Position
 
   def print_board
     ind = @board.matrix.length
-    @board.matrix.each do |arr|
+    @board.matrix.reverse_each do |arr|
       print "#{ind}#{" "*(@board.height.to_s.length-ind.to_s.length)} | "
       ind -= 1
       arr.each { |elem| if elem == nil then print "  "
