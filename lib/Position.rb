@@ -16,7 +16,6 @@ class Position
       line.each do |p|
         if p.class == Piece then
           p.calculatePossibleMoves(self).each do |move|
-            puts move.notation
             @possible_moves[move.notation] = move;
           end
         end
@@ -38,7 +37,6 @@ class Position
   def make_move(move)
 
       piece = @board.matrix[move.movement[0][0]][move.movement[0][1]]
-      puts piece
       piece.pos = Vector[move.movement[1][0],move.movement[1][1]]
       @board.matrix[move.movement[0][0]][move.movement[0][1]] = 0
       @board.matrix[move.movement[1][0]][move.movement[1][1]] = piece
