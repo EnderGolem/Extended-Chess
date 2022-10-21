@@ -5,6 +5,7 @@ require_relative 'piece_description'
 require_relative 'setup'
 require_relative 'Mode'
 require_relative 'spawner'
+require_relative 'Helpers/notation_translation_helper'
 
 class Chess
   attr_reader :boards, :movement_rules, :pieces, :modes, :setups
@@ -54,8 +55,26 @@ class Chess
     end
 
   def step_forward(piece,position)
-    return [Move.new('e2-e3',[method(:can_step_forward?)])]
+    #Если впереди нас стоит какая-либо фигураЮ то походить не можем
+    if(check_figure(piece.pos + piece.dir,position) != nil) then
+      return []
+    end
+
+    movement = [piece.pos,piece.pos + piece.dir]
+    notation = piece.piece_description.notation_name +
+      NotationTranslationHelper.array_to_notation(movement[0]) + "-" +
+      NotationTranslationHelper.array_to_notation(movement[1]);
+    return [Move.new(notation,movement)]
   end
+
+  def check_figure(pos, position)
+    if (position.board.matrix[pos[0]][pos[1]] != 0 && position.board.matrix[pos[0]][pos[1]] != nil) then
+      return position.board.matrix[pos[0]][pos[1]]
+      else
+      return nil
+    end
+  end
+
   def can_step_forward?(start, maybe_finish, dir)
     start[0] += dir[0]
     start[1] += dir[1]

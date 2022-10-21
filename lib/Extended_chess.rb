@@ -23,9 +23,17 @@ module ExtendedChess
   player1 = Player.new('Alex',:red)
   player2 = Player.new('Max',:blue)
   game = mode.make_game([player1,player2],[chess.setups['Classic'],chess.setups['Classic']])
+  #puts game.position.possible_moves
   game.position.print_board
-  game.step!([6,2], [5,2])
+
+
+  game.step!('e2-e3')
+  game.step!('c7-c6')
+  game.step!('c6-c5')
+  game.step!('a7-a5')
+
   game.position.print_board
+
   puts NotationTranslationHelper.array_to_notation([5,2]);
   puts NotationTranslationHelper.notation_to_array('c6');
 end
