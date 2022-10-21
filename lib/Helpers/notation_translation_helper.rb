@@ -4,7 +4,7 @@ class NotationTranslationHelper
     x = notation[0].bytes[0] - 'a'.bytes[0]
     return Vector[y,x]
   end
-  #Передаем координату в форме вектора,  а такжеширину и высоту доски
+  #Передаем координату в форме вектора,  а также ширину и высоту доски
   def self.array_to_notation(coord)
     ch = 'a'.bytes[0]
     c = (coord[1]+ch).chr
