@@ -127,7 +127,7 @@ class Chess
         movement = [[piece.pos,far]]
         removing = [near]
         notation = piece.piece_description.notation_name+
-          NotationTranslationHelper.array_to_notation(movement[0][0]) +
+          NotationTranslationHelper.array_to_notation(movement[0][0]) + "-" +
           NotationTranslationHelper.array_to_notation(movement[0][1]);
         move = Move.new(notation,movement,removing)
         moves.push(move)
