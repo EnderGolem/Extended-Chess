@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+
 
 require 'colorize'
 require_relative 'Position'
@@ -31,9 +31,22 @@ module ExtendedChess
   game.step!('c7-c6')
   game.step!('c6-c5')
   game.step!('a7-a5')
+  game.step!('f2-f3')
+
 
   game.position.print_board
 
   puts NotationTranslationHelper.array_to_notation([5,2]);
   puts NotationTranslationHelper.notation_to_array('c6');
+
+  mode = chess.modes['Checkers']
+  game = mode.make_game([player1,player2],[chess.setups['Checkers'],chess.setups['Checkers']])
+  game.position.print_board
+
+  while true do
+    m = gets.chomp
+    game.step!(m)
+    game.position.print_board
+    #p game.position.possible_moves
+  end
 end
