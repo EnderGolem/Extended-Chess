@@ -51,4 +51,5 @@ module ExtendedChess
     game.position.print_board
     #p game.position.possible_moves
   end
+
 end
