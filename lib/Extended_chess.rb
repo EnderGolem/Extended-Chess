@@ -42,7 +42,9 @@ module ExtendedChess
   mode = chess.modes['Checkers']
   game = mode.make_game([player1,player2],[chess.setups['Checkers'],chess.setups['Checkers']])
   game.position.print_board
-
+  var = ([0,1,-1].product [0,1,-1] ).to_a
+  var.delete([0,0])
+  p (var)
   while true do
     m = gets.chomp
     game.step!(m)
