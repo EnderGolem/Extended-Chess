@@ -39,8 +39,10 @@ module ExtendedChess
   puts NotationTranslationHelper.array_to_notation([5,2]);
   puts NotationTranslationHelper.notation_to_array('c6');
 
-  mode = chess.modes['Checkers']
-  game = mode.make_game([player1,player2],[chess.setups['Checkers'],chess.setups['Checkers']])
+  #mode = chess.modes['Checkers']
+  #game = mode.make_game([player1,player2],[chess.setups['Checkers'],chess.setups['Checkers']])
+  mode = chess.modes['Test']
+  game = mode.make_game([player1,player2],[chess.setups['test1'],chess.setups['test1']])
   game.position.print_board
   var = ([0,1,-1].product [0,1,-1] ).to_a
   var.delete([0,0])
@@ -49,6 +51,11 @@ module ExtendedChess
     m = gets.chomp
     game.step!(m)
     game.position.print_board
+
+    if(game.is_ended?) then
+      p game.get_result
+      break
+    end
     #p game.position.possible_moves
   end
 

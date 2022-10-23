@@ -2,7 +2,7 @@ require_relative 'Board'
 require_relative 'Chess'
 
 class Position
-  attr_reader  :possible_moves, :cur_subturn, :turn_num
+  attr_reader :possible_moves, :cur_subturn, :turn_num, :colors, :active_players, :winners, :losers, :is_final
   attr_accessor :board
 
 =begin
@@ -12,14 +12,21 @@ class Position
       - текущий ход
       - номер игрока который ходит в данный момент
 =end
+  SKIP_MOVE = Move.new(' ')
 
-
-  def initialize(board,colors,turn_num = 1, cur_subturn = 0)
+  def initialize(board,colors,player_defeat_conditions,player_win_conditions,no_move_policy,turn_num = 1, cur_subturn = 0)
     @board = board
     @colors = colors
+    @active_players = colors
+    @winners = []   #format: [[color, win_reason:string],...]
+    @losers = []    #format: [[color, lose_reason:string],...]
+    @player_defeat_conditions = player_defeat_conditions
+    @player_win_conditions = player_win_conditions
+    @no_move_policy = no_move_policy
     @turn_num = turn_num
     @cur_subturn = cur_subturn
     @possible_moves = Hash.new
+    @is_final = false #определяет закончилась ли игра
     calculate_possible_moves
   end
 
@@ -43,17 +50,101 @@ class Position
   end
 
   def step!(notation)
+    if @is_final then return end
     if has_move(notation)
       make_move(@possible_moves[notation])
+      check_losers_and_winners
+      if @is_final then return end
+      #Если у игрока нет ходов, то нужно обработать это
+      # после чего пересчитать победителей и проигравших и понять не закончилась ли игра
+      # И так до тех пор пока не найдем игрока, который может нормально ходить
+      mc = 0
+      while mc==0
+        inc_subturn
+        calculate_possible_moves
+        mc = @possible_moves.length
+        handle_no_possible_moves
+        check_losers_and_winners
+        if @is_final then return end
+      end
+      puts "losers: #{losers}"
+      puts "winners: #{winners}"
+      puts @is_final
+    end
+  end
+
+    def check_losers_and_winners
+      change = false
+      loop do
+        flag = false
+        deleted = []
+        @active_players.each_index do |ind|
+          if(!@player_defeat_conditions.nil?) then
+            res = nil
+            @player_defeat_conditions.each do |cond|
+              res = cond.call(@active_players[ind],self)
+            end
+            if(!res.nil?) then
+              @losers.push([@active_players[ind],res])
+              deleted.push(@active_players[ind])
+              flag = true
+            end
+          end
+          if(!flag && !@player_win_conditions.nil?) then
+            res = nil
+            @player_win_conditions.each do |cond|
+              res = cond.call(@active_players[ind],self)
+            end
+            if(!res.nil?) then
+              @winners.push([@active_players[ind],res])
+              deleted.push(@active_players[ind])
+              flag = true
+            end
+          end
+          if flag then change = true end
+        end
+
+        @active_players -= deleted
+
+        break if !change || @active_players.length == 0
+      end
+      if(@active_players.length == 0) then @is_final = true; end
+    end
+  def handle_no_possible_moves
+    if(@possible_moves.length > 0 ) then return end
+
+    if(@no_move_policy == 'winning') then
+      @winners.push([get_cur_player,'All moves was blocked!'])
+      @active_players-=get_cur_player
+    elsif (@no_move_policy == 'losing') then
+      @losers.push([get_cur_player,'All moves was blocked!'])
+      @active_players-=get_cur_player
+    elsif (@no_move_policy == 'skipping')
+      inc_subturn
+    elsif (@no_move_policy == 'draw')
+      #TODO: make draw
+    end
+  end
+  def inc_subturn
+    @cur_subturn+=1
+    if(@cur_subturn>=@colors.length) then
+      @cur_subturn = 0
+      @turn_num+=1
+    end
+    #Пока не найдем все еще активного игрока, за неактивных просто пропускаем ход
+    while(!@active_players.include?(@colors[cur_subturn]))
+      make_move(SKIP_MOVE)
       @cur_subturn+=1
       if(@cur_subturn>=@colors.length) then
         @cur_subturn = 0
         @turn_num+=1
       end
-      calculate_possible_moves
     end
   end
 
+  def get_cur_player
+    return @active_players[@cur_subturn]
+  end
   def make_move(move)
     if(!move.movements.nil?) then
       move.movements.each do |movement|

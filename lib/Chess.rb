@@ -11,6 +11,7 @@ class Chess
   attr_reader :boards, :movement_rules, :pieces, :modes, :setups
     def initialize
       @boards = Hash.new
+      @boards['Square4x4'] = Board.new(Array.new(4){Array.new(4){0}})
       @boards['Square8x8'] = Board.new(Array.new(8){Array.new(8){0}})
       ffa = [
         [nil,nil,nil,nil,0,0,0,0,0,0,0,0,nil,nil,nil,nil],
@@ -54,30 +55,46 @@ class Chess
 
 
       @setups = Hash.new
-      @setups['Classic'] = Setup.new(
+      @setups['Classic'] = Setup.new('Classic',
         [
           [nil,nil,nil,nil,nil,nil,nil,nil],
           %w[Pawn Pawn Pawn Pawn Pawn Pawn Pawn Pawn]
         ]
       )
+      @setups['test1'] = Setup.new('test1',
+        [[nil, nil, nil, nil],
+                 [ nil,'Man',nil ,nil]]
+      )
 
-      @setups['Checkers'] = Setup.new(
+      @setups['Checkers'] = Setup.new('Checkers',
         [
           ['Man', nil, 'Man', nil, 'Man', nil, 'Man', nil ],
           [ nil, 'Man', nil, 'Man', nil, 'Man', nil, 'Man'],
           ['Man', nil, 'Man', nil, 'Man', nil, 'Man', nil ]
         ]
       )
-
+      @end_game_conditions = Hash.new
+      @end_game_conditions['Piece_lost'] = method(:lost_all_pieces)
+      @end_game_conditions['All_opponents_lost'] = method(:all_opponents_lost)
       @modes = Hash.new
       @modes['Classic'] = Mode.new(@boards['Square8x8'],
                                    [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
                                     Spawner.new(Vector[7,0],Vector[-1,0],Vector[0,1])],
-                                   2,2,nil)
+                                   2,2,['Classic'],
+                                   [@end_game_conditions['Piece_lost']],
+                                   [@end_game_conditions["All_opponents_lost"]])
       @modes['Checkers'] = Mode.new(@boards['Square8x8'],
                                    [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
                                     Spawner.new(Vector[7,7],Vector[-1,0],Vector[0,-1])],
-                                   2,2,nil)
+                                   2,2,['Checkers'],
+                                    [@end_game_conditions['Piece_lost']],
+                                    [@end_game_conditions["All_opponents_lost"]])
+      @modes['Test'] = Mode.new(@boards['Square4x4'],
+                                [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
+                                 Spawner.new(Vector[3,3],Vector[-1,0],Vector[0,-1])],
+                                2,2,['test1'],
+                                [@end_game_conditions['Piece_lost']],
+                                [@end_game_conditions["All_opponents_lost"]])
     end
 
   def step_forward(piece,position)
@@ -208,6 +225,25 @@ class Chess
       position.board.matrix[pos[0]][pos[1]] != nil &&
       position.board.matrix[pos[0]][pos[1]] != 0) then
       return position.board.matrix[pos[0]][pos[1]]
+    end
+    return nil
+  end
+
+  def lost_all_pieces(player_color,position)
+    c = 0
+
+    position.board.matrix.each do |line|
+      c+= line.count { |p| p.class == Piece && p.player_color == player_color}
+    end
+    if c == 0 then
+      return 'Lost all pieces!'
+    end
+    return nil
+  end
+
+  def all_opponents_lost(player_color,position)
+    if(position.losers.length == position.colors.length-1 && position.active_players.include?(player_color)) then
+      return 'All opponents lost!'
     end
     return nil
   end
