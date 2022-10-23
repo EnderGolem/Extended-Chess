@@ -8,7 +8,7 @@ class Game
     @position = position
   end
 
-
+  #notation - String
   def step!(notation)
 
     if(@position.has_move(notation))

@@ -38,10 +38,12 @@ class Position
     end
   end
 
+  #notation - String
   def has_move(notation)
     return @possible_moves.has_key?(notation)
   end
 
+  #notation - String
   def step!(notation)
     if has_move(notation)
       make_move(@possible_moves[notation])
