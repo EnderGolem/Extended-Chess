@@ -9,7 +9,7 @@ class Interface
   def initialize
     @chess = Chess.new()
   end
-  def inteface()
+  def interface()
 
     puts "Select the number of players"
     puts "You can choose only two"
@@ -66,8 +66,9 @@ class Interface
 
 
     puts "START GAME"
-    #TODO game
+    game = mode.make_game(players, setups)
 
+    #TODO game
 
   end
 
