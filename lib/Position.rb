@@ -69,9 +69,6 @@ class Position
         check_losers_and_winners
         if @is_final then return end
       end
-      puts "losers: #{losers}"
-      puts "winners: #{winners}"
-      puts @is_final
     end
   end
 
@@ -116,11 +113,11 @@ class Position
     if(@possible_moves.length > 0 ) then return end
 
     if(@no_move_policy == 'winning') then
-      @winners.push([get_cur_player,'All moves was blocked!'])
-      @active_players -= get_cur_player
+      @winners.push([get_cur_color_player, 'All moves was blocked!'])
+      @active_players -= get_cur_color_player
     elsif (@no_move_policy == 'losing') then
-      @losers.push([get_cur_player,'All moves was blocked!'])
-      @active_players -= get_cur_player
+      @losers.push([get_cur_color_player, 'All moves was blocked!'])
+      @active_players -= get_cur_color_player
     elsif (@no_move_policy == 'skipping')
       inc_subturn
     elsif (@no_move_policy == 'draw')
@@ -128,23 +125,23 @@ class Position
     end
   end
   def inc_subturn
-    @cur_subturn+=1
-    if(@cur_subturn>=@colors.length) then
+    @cur_subturn += 1
+    if(@cur_subturn >= @colors.length) then
       @cur_subturn = 0
-      @turn_num+=1
+      @turn_num += 1
     end
     #Пока не найдем все еще активного игрока, за неактивных просто пропускаем ход
     while(!@active_players.include?(@colors[cur_subturn]))
       make_move(SKIP_MOVE)
-      @cur_subturn+=1
-      if(@cur_subturn>=@colors.length) then
+      @cur_subturn += 1
+      if(@cur_subturn >= @colors.length) then
         @cur_subturn = 0
         @turn_num+=1
       end
     end
   end
 
-  def get_cur_player
+  def get_cur_color_player
     return @active_players[@cur_subturn]
   end
   def make_move(move)
