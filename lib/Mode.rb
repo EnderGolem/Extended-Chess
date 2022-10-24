@@ -1,5 +1,6 @@
 require_relative 'game'
 require_relative 'Chess'
+
 #Режим игры
 class Mode
   def initialize(board,spawns,team_count,player_count,allowed_setups)
@@ -7,7 +8,7 @@ class Mode
     @spawn = spawns
     @team_count = team_count
     @player_count = player_count
-    @allowed_setups = allowed_setups
+    @allowed_setups = allowed_setups # Доступные наборы фигур
   end
   # Создает игру в выбранном режиме с конкретными игроками, сетапами и параметрами
   def make_game(players,setups)
