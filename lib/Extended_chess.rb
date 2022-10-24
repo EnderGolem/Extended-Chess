@@ -6,6 +6,7 @@ require_relative 'Chess'
 require_relative 'Move'
 require_relative 'Player'
 require_relative 'Board'
+require_relative 'Interface'
 require_relative 'Helpers/notation_translation_helper'
 
 def f
@@ -17,7 +18,10 @@ def f1
 end
 module ExtendedChess
 
+  interface = Interface.new()
+  interface.interface()
 
+=begin
   chess = Chess.new
   mode = chess.modes['Classic']
   player1 = Player.new('Alex',:red)
@@ -28,16 +32,22 @@ module ExtendedChess
 
 
   game.step!('e2-e3')
+  puts 'e2-e3'
+  game.position.print_board
   game.step!('c7-c6')
+  puts 'c7-c6'
+  game.position.print_board
   game.step!('c6-c5')
-  game.step!('a7-a5')
+  puts 'c6-c5'
+  game.position.print_board
+  game.step!('a7-a6')
+  puts 'a7-a6'
+  game.position.print_board
   game.step!('f2-f3')
 
 
   game.position.print_board
-
-  puts NotationTranslationHelper.array_to_notation([5,2]);
-  puts NotationTranslationHelper.notation_to_array('c6');
+  puts "---------------------------------".colorize(:green)
 
   #mode = chess.modes['Checkers']
   #game = mode.make_game([player1,player2],[chess.setups['Checkers'],chess.setups['Checkers']])
@@ -58,5 +68,6 @@ module ExtendedChess
     end
     #p game.position.possible_moves
   end
+=end
 
 end

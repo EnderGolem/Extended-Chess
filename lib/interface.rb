@@ -40,9 +40,9 @@ class Interface
     puts "START GAME"
     game = mode.make_game(players, setups)
 
-    #TODO game
+    game.position.print_board
     while true do
-      puts ("Move player: " + game.position.get_cur_player().name ).colorize(game.position.get_cur_player().color)  #Написать правильно
+      puts ("Move player: " + game.position.get_cur_color_player().name ).colorize(game.position.get_cur_color_player())  #Написать правильно
       step = gets.chomp
       if(!game.step!(step))
         puts "WRONG MOVE".colorize(:red)  #Написать правильно
