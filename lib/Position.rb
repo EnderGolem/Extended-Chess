@@ -117,10 +117,10 @@ class Position
 
     if(@no_move_policy == 'winning') then
       @winners.push([get_cur_player,'All moves was blocked!'])
-      @active_players-=get_cur_player
+      @active_players -= get_cur_player
     elsif (@no_move_policy == 'losing') then
       @losers.push([get_cur_player,'All moves was blocked!'])
-      @active_players-=get_cur_player
+      @active_players -= get_cur_player
     elsif (@no_move_policy == 'skipping')
       inc_subturn
     elsif (@no_move_policy == 'draw')
