@@ -97,6 +97,10 @@ class Chess
                                 [@end_game_conditions["All_opponents_lost"]])
     end
 
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
+  # Делает шаг вперед
   def step_forward(piece,position)
     #Если впереди нас стоит какая-либо фигураЮ то походить не можем
     if(check_figure(piece.pos + piece.dir,position) != nil) then
@@ -110,6 +114,9 @@ class Chess
     return [Move.new(notation,movement)]
   end
 
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
   def step_diagonal_right(piece, position)
     right_dir = piece.dir.cross + piece.dir
     if(!is_on_board?(piece.pos + right_dir,position) || check_figure(piece.pos + right_dir,position) != nil) then
@@ -123,7 +130,9 @@ class Chess
     return [Move.new(notation,movement)]
 
   end
-
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
   def step_diagonal_left(piece, position)
     left_dir = -piece.dir.cross + piece.dir
     if(!is_on_board?(piece.pos + left_dir,position) || check_figure(piece.pos + left_dir,position) != nil) then
@@ -137,7 +146,10 @@ class Chess
     return [Move.new(notation,movement)]
 
   end
-
+  
+  #piece - Piece
+  #positiong - Position
+  #TODO Пояснения как ходит
   def man_step(piece,position)
     moves = step_diagonal_left(piece,position) + step_diagonal_right(piece,position)
     moves.each_index do |ind|
@@ -154,6 +166,10 @@ class Chess
     return moves
   end
 
+
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
   def diagonal_jump_with_kill(piece,position)
     moves = []
     forward = piece.dir
@@ -176,6 +192,7 @@ class Chess
     return moves
   end
 
+    #TODO Пояснения как ходит
   def verhor_jump_with_kill(piece,position)
     moves = []
     forward = piece.dir
@@ -197,7 +214,8 @@ class Chess
     end
     return moves
   end
-
+  
+  #TODO Пояснения как ходит
   def step_any_dir(piece,position)
     moves = []
     right_dir = piece.dir.cross
@@ -220,6 +238,10 @@ class Chess
     return moves
   end
 
+
+  #pos - Vector
+  #positiong - Position
+  #return - Array[Move]
   def check_figure(pos, position)
     if (position.board.matrix[pos[0]] != nil &&
       position.board.matrix[pos[0]][pos[1]] != nil &&
@@ -247,9 +269,12 @@ class Chess
     end
     return nil
   end
+  
+  #pos - Vector
+  #positiong - Position  
   # Проверяет лежит ли заданная позиция в пределах игрового поля
   def is_on_board?(pos, position)
-    return pos[0]<position.board.height && pos[0] >= 0 && pos[1]<position.board.width && pos[1] >=0 &&
+    return pos[0] < position.board.height && pos[0] >= 0 && pos[1] < position.board.width && pos[1] >= 0 &&
     position.board.matrix[pos[0]][pos[1]] != nil
   end
   #Функция определяет является ли заданая клетка
