@@ -1,3 +1,4 @@
+# Класс хода
 class Move
   attr_accessor :notation, :movements, :removing, :spawn
 
