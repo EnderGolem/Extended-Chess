@@ -61,7 +61,7 @@ class Position
       # после чего пересчитать победителей и проигравших и понять не закончилась ли игра
       # И так до тех пор пока не найдем игрока, который может нормально ходить
       mc = 0
-      while mc==0
+      while mc == 0
         inc_subturn
         calculate_possible_moves
         mc = @possible_moves.length
@@ -148,17 +148,17 @@ class Position
     return @active_players[@cur_subturn]
   end
   def make_move(move)
+    if(!move.removing.nil?) then
+      move.removing.each do |rem|
+        @board.matrix[rem[0]][rem[1]] = 0
+      end
+    end
     if(!move.movements.nil?) then
       move.movements.each do |movement|
         piece = @board.matrix[movement[0][0]][movement[0][1]]
         piece.pos = Vector[movement[1][0],movement[1][1]]
         @board.matrix[movement[0][0]][movement[0][1]] = 0
         @board.matrix[movement[1][0]][movement[1][1]] = piece
-      end
-    end
-    if(!move.removing.nil?) then
-      move.removing.each do |rem|
-        @board.matrix[rem[0]][rem[1]] = 0
       end
     end
     if(!move.spawn.nil?) then
