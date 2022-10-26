@@ -34,7 +34,7 @@ class Chess
       @boards['FFA'] = Board.new(ffa)
 
       @movement_rules = Hash.new
-      movement_rules['step_forward'] = method(:step_forward) # Maybe:   movement_rules['step_forward'] = step_forward()  and step_forward(without arg)
+      movement_rules['step_forward'] = method(:step_forward)
       movement_rules['step_diagonal_right'] = method(:step_diagonal_right)
       movement_rules['step_diagonal_left'] = method(:step_diagonal_left)
       movement_rules['diagonal_jump_with_kill'] = method(:diagonal_jump_with_kill)
@@ -100,8 +100,8 @@ class Chess
   #piece - Piece
   #positiong - Position
   #return - Array[Move]
-  # Делает шаг вперед
-  def step_forward(piece,position)
+  #Делает шаг вперед
+  def step_forward(piece, position)
     #Если впереди нас стоит какая-либо фигураЮ то походить не можем
     if(check_figure(piece.pos + piece.dir,position) != nil) then
       return []

@@ -32,8 +32,8 @@ class Mode
         line.each do |pName|
           cur_pos = @spawn[ind].startPos + j * @spawn[ind].right_dir + i * @spawn[ind].up_dir
           @board.matrix[cur_pos[0]][cur_pos[1]] = (pName == nil) ? 0 :
-            Piece.new(cur_pos,players[ind].color,players[ind].color,@spawn[ind].up_dir,chess.pieces[pName])
-            j += 1
+                                                    Piece.new(cur_pos,players[ind].color,players[ind].color,@spawn[ind].up_dir,chess.pieces[pName])
+          j += 1
         end
         j = 0
         i += 1
