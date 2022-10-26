@@ -54,6 +54,7 @@ class Position
   def step!(notation)
     if @is_final then return end
     if has_move(notation)
+      update_data(@possible_moves[notation])
       make_move(@possible_moves[notation])
       check_losers_and_winners
       if @is_final then return end
@@ -144,6 +145,19 @@ class Position
   def get_cur_color_player
     return @active_players[@cur_subturn]
   end
+
+  #move - Move
+  #Обновляет данные фигуры
+  def update_data(move)
+    if(!move.movements.nil?) then
+      move.movements.each do |movement|
+        piece = @board.matrix[movement[0][0]][movement[0][1]]
+        piece.data[:Count_of_move] += 1
+        piece.data[:Moves].push(move.notation)
+      end
+    end
+  end
+
   def make_move(move)
     if(!move.removing.nil?) then
       move.removing.each do |rem|
