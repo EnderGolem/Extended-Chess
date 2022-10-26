@@ -173,4 +173,110 @@ class TestExtendedChess < MiniTest::Test
      assert_equal game.position.winners, [[:red,"All opponents lost!"]], '3'
      assert_equal game.position.losers,  [[:blue, "Lost all pieces!"]], '4'
    end
+
+  def test_step_diagonal_right
+    game = @chess.modes['Checkers'].make_game([@player1,@player2],[@chess.setups['Checkers'],@chess.setups['Checkers']])
+
+    matrix_checkers = [
+      [  'Man',    nil, 'Man',     nil,  'Man',   nil,    'Man',     nil ],  # 1
+      [    nil,  'Man',   nil,   'Man',    nil,  'Man',     nil,    'Man'],  # 2
+      [  'Man',    nil, 'Man',     nil,  'Man',    nil,   'Man',     nil ],  # 3
+      [    nil,    nil,    nil,    nil,    nil,    nil,     nil,      nil],  # 4
+      [    nil,    nil,    nil,    nil,    nil,    nil,     nil,      nil],  # 5
+      [    nil,  'Man',    nil,  'Man',    nil,  'Man',     nil,    'Man'],  # 6
+      [  'Man',    nil,  'Man',    nil,  'Man',    nil,    'Man',     nil],  # 7
+      [    nil,  'Man',    nil,  'Man',    nil,   'Man',     nil,   'Man'],  # 8
+    ]
+
+    assert_equal true, equal_matrix?(game.position.board.matrix, matrix_checkers), '1'
+
+    game.step!('mc3-b4') # Ход верхнего игрока
+
+    matrix_checkers = [
+      [  'Man',    nil, 'Man',     nil,  'Man',   nil,    'Man',     nil ],  # 1
+      [    nil,  'Man',   nil,   'Man',    nil,  'Man',     nil,    'Man'],  # 2
+      [  'Man',    nil,    nil,     nil,  'Man',    nil,   'Man',     nil ], # 3
+      [    nil,  'Man',    nil,    nil,    nil,    nil,     nil,      nil],  # 4
+      [    nil,    nil,    nil,    nil,    nil,    nil,     nil,      nil],  # 5
+      [    nil,  'Man',    nil,  'Man',    nil,  'Man',     nil,    'Man'],  # 6
+      [  'Man',    nil,  'Man',    nil,  'Man',    nil,    'Man',     nil],  # 7
+      [    nil,  'Man',    nil,  'Man',    nil,   'Man',     nil,   'Man'],  # 8
+    ]
+
+    assert_equal true, equal_matrix?(game.position.board.matrix, matrix_checkers), '2'
+
+    # Ход не удался, на b6 стоит шашка
+    game.step!('ma7-b6') # Ход нижнего игрока
+    # Ход не удался, на d5 нет шашки
+    game.step!('md5-e4') # Ход нижнего игрока
+    assert_equal true, equal_matrix?(game.position.board.matrix, matrix_checkers), '3'
+
+    game.step!('md6-e5') # Ход нижнего игрока
+
+    matrix_checkers = [
+      [  'Man',    nil, 'Man',     nil,  'Man',   nil,    'Man',     nil ],  # 1
+      [    nil,  'Man',   nil,   'Man',    nil,  'Man',     nil,    'Man'],  # 2
+      [  'Man',    nil,    nil,     nil,  'Man',    nil,   'Man',     nil ],  # 3
+      [    nil,  'Man',    nil,    nil,    nil,    nil,     nil,      nil],  # 4
+      [    nil,    nil,    nil,    nil,  'Man',    nil,     nil,      nil],  # 5
+      [    nil,  'Man',    nil,    nil,    nil,  'Man',     nil,    'Man'],  # 6
+      [  'Man',    nil,  'Man',    nil,  'Man',    nil,    'Man',     nil],  # 7
+      [    nil,  'Man',    nil,  'Man',    nil,   'Man',     nil,   'Man'],  # 8
+    ]
+
+    assert_equal true, equal_matrix?(game.position.board.matrix, matrix_checkers), '4'
+
+    game.step!('тест_тест_тест') # Ход верхнего игрока
+    assert_equal true, equal_matrix?(game.position.board.matrix, matrix_checkers), '5'
+    game.step!(23213) # Ход верхнего игрока
+    assert_equal true, equal_matrix?(game.position.board.matrix, matrix_checkers), '6'
+    game.step!(nil) # Ход верхнего игрока
+    assert_equal true, equal_matrix?(game.position.board.matrix, matrix_checkers), '7'
+
+  end
+
+  def test_step_diagonal_left
+    game = @chess.modes['Checkers'].make_game([@player1,@player2],[@chess.setups['Checkers'],@chess.setups['Checkers']])
+
+    matrix_checkers = [
+      [  'Man',    nil, 'Man',     nil,  'Man',   nil,    'Man',     nil ],  # 1
+      [    nil,  'Man',   nil,   'Man',    nil,  'Man',     nil,    'Man'],  # 2
+      [  'Man',    nil, 'Man',     nil,  'Man',    nil,   'Man',     nil ],  # 3
+      [    nil,    nil,    nil,    nil,    nil,    nil,     nil,      nil],  # 4
+      [    nil,    nil,    nil,    nil,    nil,    nil,     nil,      nil],  # 5
+      [    nil,  'Man',    nil,  'Man',    nil,  'Man',     nil,    'Man'],  # 6
+      [  'Man',    nil,  'Man',    nil,  'Man',    nil,    'Man',     nil],  # 7
+      [    nil,  'Man',    nil,  'Man',    nil,   'Man',     nil,   'Man'],  # 8
+    ]
+
+    game.step!('mc3-d4')
+
+    matrix_checkers = [
+      [  'Man',    nil,  'Man',    nil,  'Man',   nil,    'Man',     nil ],  # 1
+      [    nil,  'Man',    nil,  'Man',    nil,  'Man',     nil,    'Man'],  # 2
+      [  'Man',    nil,    nil,    nil,  'Man',    nil,   'Man',     nil ],  # 3
+      [    nil,    nil,    nil,  'Man',    nil,    nil,     nil,      nil],  # 4
+      [    nil,    nil,    nil,    nil,    nil,    nil,     nil,      nil],  # 5
+      [    nil,  'Man',    nil,  'Man',    nil,  'Man',     nil,    'Man'],  # 6
+      [  'Man',    nil,  'Man',    nil,  'Man',    nil,    'Man',     nil],  # 7
+      [    nil,  'Man',    nil,  'Man',    nil,   'Man',     nil,   'Man'],  # 8
+    ]
+
+    assert_equal true, equal_matrix?(game.position.board.matrix, matrix_checkers), '1'
+    game.step!('mb6-a5')
+
+    matrix_checkers = [
+      [  'Man',    nil,  'Man',    nil,  'Man',   nil,    'Man',     nil ],  # 1
+      [    nil,  'Man',    nil,  'Man',    nil,  'Man',     nil,    'Man'],  # 2
+      [  'Man',    nil,    nil,    nil,  'Man',    nil,   'Man',     nil ],  # 3
+      [    nil,    nil,    nil,  'Man',    nil,    nil,     nil,      nil],  # 4
+      [  'Man',    nil,    nil,    nil,    nil,    nil,     nil,      nil],  # 5
+      [    nil,    nil,    nil,  'Man',    nil,  'Man',     nil,    'Man'],  # 6
+      [  'Man',    nil,  'Man',    nil,  'Man',    nil,    'Man',     nil],  # 7
+      [    nil,  'Man',    nil,  'Man',    nil,   'Man',     nil,   'Man'],  # 8
+    ]
+    assert_equal true, equal_matrix?(game.position.board.matrix, matrix_checkers), '2'
+
+  end
+
 end
