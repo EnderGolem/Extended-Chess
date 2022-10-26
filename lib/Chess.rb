@@ -185,10 +185,12 @@ class Chess
         notation = piece.piece_description.notation_name+
           NotationTranslationHelper.array_to_notation(movement[0][0]) + "-" +
           NotationTranslationHelper.array_to_notation(movement[0][1]);
+        # puts notation
         move = Move.new(notation,movement,removing)
         moves.push(move)
       end
     end
+    # puts moves
     return moves
   end
 

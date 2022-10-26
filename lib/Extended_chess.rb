@@ -1,5 +1,3 @@
-
-
 require 'colorize'
 require_relative 'Position'
 require_relative 'Chess'
@@ -9,27 +7,19 @@ require_relative 'Board'
 require_relative 'Interface'
 require_relative 'Helpers/notation_translation_helper'
 
-def f
-  [Move.new("e2-e3"), Move.new("e2-e4")]
-end
 
-def f1
-  [112,34,67]
-end
 module ExtendedChess
-
-  interface = Interface.new()
-  interface.interface()
-
+interface = Interface.new()
+interface.interface()
 =begin
   chess = Chess.new
   mode = chess.modes['Classic']
   player1 = Player.new('Alex',:red)
   player2 = Player.new('Max',:blue)
   game = mode.make_game([player1,player2],[chess.setups['Classic'],chess.setups['Classic']])
-  #puts game.position.possible_moves
-  game.position.print_board
-
+  # puts game.position.possible_moves
+  # game.position.print_board
+  # p game.position.board.matrix.length
 
   game.step!('e2-e3')
   puts 'e2-e3'
@@ -45,9 +35,7 @@ module ExtendedChess
   game.position.print_board
   game.step!('f2-f3')
 
-
   game.position.print_board
-  puts "---------------------------------".colorize(:green)
 
   #mode = chess.modes['Checkers']
   #game = mode.make_game([player1,player2],[chess.setups['Checkers'],chess.setups['Checkers']])
