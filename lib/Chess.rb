@@ -34,7 +34,10 @@ class Chess
       @boards['FFA'] = Board.new(ffa)
 
       @movement_rules = Hash.new
-      movement_rules['step_forward'] = method(:step_forward) # Maybe:   movement_rules['step_forward'] = step_forward()  and step_forward(without arg)
+      movement_rules['step_forward'] = method(:step_forward)
+      movement_rules['step_straight_line'] = method(:step_straight_line)
+      movement_rules['step_diagonal_line'] = method(:step_diagonal_line)
+      movement_rules['step_L'] = method(:step_L)
       movement_rules['step_diagonal_right'] = method(:step_diagonal_right)
       movement_rules['step_diagonal_left'] = method(:step_diagonal_left)
       movement_rules['diagonal_jump_with_kill'] = method(:diagonal_jump_with_kill)
@@ -45,6 +48,9 @@ class Chess
 
       @pieces = Hash.new
       @pieces['Pawn'] = PieceDescription.new("Pawn","","p",[movement_rules['step_forward']])
+      @pieces['Rook'] = PieceDescription.new("Rook","","r",[movement_rules['step_straight_line']])
+      @pieces['Bishop'] = PieceDescription.new("Bishop","","b",[movement_rules['step_diagonal_line']])
+      @pieces['Knight'] = PieceDescription.new("Knight","","k",[movement_rules['step_L']])
       @pieces['Man'] = PieceDescription.new("Man","m","m",
                                             [movement_rules['man_step'],
                                              movement_rules['diagonal_jump_with_kill']])
@@ -57,7 +63,7 @@ class Chess
       @setups = Hash.new
       @setups['Classic'] = Setup.new('Classic',
         [
-          [nil,nil,nil,nil,nil,nil,nil,nil],
+          ['Rook','Knight','Bishop',nil,nil,'Bishop','Knight','Rook'],
           %w[Pawn Pawn Pawn Pawn Pawn Pawn Pawn Pawn]
         ]
       )
@@ -108,9 +114,7 @@ class Chess
     end
 
     movement = [[piece.pos,piece.pos + piece.dir]]
-    notation = piece.piece_description.notation_name +
-      NotationTranslationHelper.array_to_notation(movement[0][0]) + "-" +
-      NotationTranslationHelper.array_to_notation(movement[0][1]);
+    notation = NotationTranslationHelper.get_notation(piece,movement)
     return [Move.new(notation,movement)]
   end
 
@@ -124,9 +128,7 @@ class Chess
     end
 
     movement = [[piece.pos,piece.pos + right_dir]]
-    notation = piece.piece_description.notation_name +
-      NotationTranslationHelper.array_to_notation(movement[0][0]) + "-" +
-      NotationTranslationHelper.array_to_notation(movement[0][1]);
+    notation = NotationTranslationHelper.get_notation(piece,movement)
     return [Move.new(notation,movement)]
 
   end
@@ -140,9 +142,7 @@ class Chess
     end
 
     movement = [[piece.pos,piece.pos + left_dir]]
-    notation = piece.piece_description.notation_name +
-      NotationTranslationHelper.array_to_notation(movement[0][0]) + "-" +
-      NotationTranslationHelper.array_to_notation(movement[0][1]);
+    notation = NotationTranslationHelper.get_notation(piece,movement)
     return [Move.new(notation,movement)]
 
   end
@@ -157,9 +157,7 @@ class Chess
       if(is_pos_on_finish_line(moves[ind].movements[0][1],piece.dir,position)) then
         removing = [piece.pos]
         spawning = [[moves[ind].movements[0][1],piece.team_color,piece.player_color,piece.dir,'Dame']]
-        notation = piece.piece_description.notation_name +
-          NotationTranslationHelper.array_to_notation(moves[ind].movements[0][0]) + "-" +
-          NotationTranslationHelper.array_to_notation(moves[ind].movements[0][1]) + "D"
+        notation = NotationTranslationHelper.get_notation(piece,movement)
         moves[ind] = Move.new(notation,nil,removing,spawning)
       end
     end
@@ -175,26 +173,25 @@ class Chess
     forward = piece.dir
     right_dir = piece.dir.cross
     ([1,-1].product [1,-1] ).to_a.each do |p|
-      near = piece.pos + p[0]*right_dir + p[1]*forward
-      far = piece.pos+p[0]*2*right_dir + p[1]*2*forward
+      near = piece.pos + p[0] * right_dir + p[1] * forward
+      far = piece.pos + p[0] * 2 * right_dir + p[1] * 2 * forward
       p = check_figure(near,position)
       if(p != nil && is_on_board?(near,position) && is_on_board?(far,position) &&
       p.team_color != piece.team_color && check_figure(far,position).nil?) then
         movement = [[piece.pos,far]]
         removing = [near]
-        notation = piece.piece_description.notation_name+
-          NotationTranslationHelper.array_to_notation(movement[0][0]) + "-" +
-          NotationTranslationHelper.array_to_notation(movement[0][1]);
-        # puts notation
+        notation = NotationTranslationHelper.get_notation(piece,movement)
         move = Move.new(notation,movement,removing)
         moves.push(move)
       end
     end
-    # puts moves
     return moves
   end
 
-    #TODO Пояснения как ходит
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
+  #TODO Пояснения как ходит
   def verhor_jump_with_kill(piece,position)
     moves = []
     forward = piece.dir
@@ -207,16 +204,17 @@ class Chess
         p.team_color != piece.team_color && check_figure(far,position).nil?) then
         movement = [[piece.pos,far]]
         removing = [near]
-        notation = piece.piece_description.notation_name+
-          NotationTranslationHelper.array_to_notation(movement[0][0]) + "-" +
-          NotationTranslationHelper.array_to_notation(movement[0][1]);
+        notation = NotationTranslationHelper.get_notation(piece,movement)
         move = Move.new(notation,movement,removing)
         moves.push(move)
       end
     end
     return moves
   end
-  
+
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
   #TODO Пояснения как ходит
   def step_any_dir(piece,position)
     moves = []
@@ -229,9 +227,7 @@ class Chess
 
       if(is_on_board?(pos,position) || check_figure(pos,position) == nil) then
         movement = [[piece.pos,pos]]
-        notation = piece.piece_description.notation_name+
-          NotationTranslationHelper.array_to_notation(movement[0][0]) + "-" +
-          NotationTranslationHelper.array_to_notation(movement[0][1]);
+        notation = NotationTranslationHelper.get_notation(piece,movement)
         move = Move.new(notation,movement,nil)
         moves.push(move)
       end
@@ -240,10 +236,84 @@ class Chess
     return moves
   end
 
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
+  #Ходит по прямой, как ладья
+  def step_straight_line(piece, position)
+    moves = []
+    distances = [Vector[0,1],Vector[1,0],Vector[0,-1],Vector[-1,0]]
+    distances.each do |direction|
+      pos = piece.pos + direction
+      while(pos[0].abs < 100 && pos[1].abs < 100)  #Ограничение в 100 выставленно, т.к. доски могут быть больше стандартного размера
+        figure = check_figure(pos,position)
+        if(!is_on_board?(pos,position) || figure.class == Piece)
+          break
+        end
+        moves.push(give_move(figure,piece,pos))
+        pos = pos + direction
+      end
+    end
+    return moves
+  end
+
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
+  #Ходит на искосок, как слон
+  def step_diagonal_line(piece, position)
+    moves = []
+    distances = [Vector[1,1],Vector[-1,1],Vector[1,-1],Vector[-1,-1]]
+    distances.each do |direction|
+      pos = piece.pos + direction
+      while(pos[0].abs < 100 && pos[1].abs < 100)  #Ограничение в 100 выставленно, т.к. доски могут быть больше стандартного размера
+        figure = check_figure(pos,position)
+        if(!is_on_board?(pos,position) || figure.class == Piece)
+          break
+        end
+        moves.push(give_move(figure,piece,pos))
+        pos = pos + direction
+      end
+    end
+    return moves
+  end
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
+  #Ходит буквой Г или L если на англиский вариант
+  def step_L(piece, position)
+    moves = []
+    distances = [Vector[1,2],Vector[2,1],Vector[-1,2],Vector[-2,1],Vector[1,-2],Vector[2,-1],Vector[-1,-2],Vector[-2,-1]]
+    distances.each do |direction|
+      pos = piece.pos + direction
+      figure = check_figure(pos,position)
+      if(!is_on_board?(pos,position))
+        next
+      end
+      moves.push(give_move(figure,piece,pos))
+    end
+    return moves
+  end
+
+  #figure - Piece
+  #piece - Piece
+  #pos - Vector
+  #return - Move
+  #Вспомогательня ф-я для создания ф-й ходьбы
+  def give_move(figure, piece, pos)
+
+    movement = [[piece.pos,pos]]
+    notation = NotationTranslationHelper.get_notation(piece,movement)
+    removing = nil
+    if (figure.class == Piece && figure.team_color != piece.team_color) then
+      removing = [pos]
+    end
+    return Move.new(notation,movement,removing)
+  end
 
   #pos - Vector
   #positiong - Position
-  #return - Array[Move]
+  #return - ?
   def check_figure(pos, position)
     if (position.board.matrix[pos[0]] != nil &&
       position.board.matrix[pos[0]][pos[1]] != nil &&
@@ -266,9 +336,9 @@ class Chess
   end
 
   def all_opponents_lost(player_color,position)
-    if(position.losers.length == position.colors.length-1 && position.active_players.include?(player_color)) then
+    if(position.losers.length == position.colors.length-1 && position.active_players.include?(player_color))  then
       return 'All opponents lost!'
-    end
+      end
     return nil
   end
   
