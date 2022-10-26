@@ -38,6 +38,8 @@ class Chess
       movement_rules['step_straight_line'] = method(:step_straight_line)
       movement_rules['step_diagonal_line'] = method(:step_diagonal_line)
       movement_rules['step_L'] = method(:step_L)
+      movement_rules['step_any_dir_with_kill'] = method(:step_any_dir_with_kill)
+
       movement_rules['step_diagonal_right'] = method(:step_diagonal_right)
       movement_rules['step_diagonal_left'] = method(:step_diagonal_left)
       movement_rules['diagonal_jump_with_kill'] = method(:diagonal_jump_with_kill)
@@ -51,6 +53,8 @@ class Chess
       @pieces['Rook'] = PieceDescription.new("Rook","","r",[movement_rules['step_straight_line']])
       @pieces['Bishop'] = PieceDescription.new("Bishop","","b",[movement_rules['step_diagonal_line']])
       @pieces['Knight'] = PieceDescription.new("Knight","","k",[movement_rules['step_L']])
+      @pieces['King'] = PieceDescription.new("King","","K",[movement_rules['step_any_dir_with_kill']])
+      @pieces['Queen'] = PieceDescription.new("Queen","","Q",[movement_rules['step_straight_line'],movement_rules['step_diagonal_line']])
       @pieces['Man'] = PieceDescription.new("Man","m","m",
                                             [movement_rules['man_step'],
                                              movement_rules['diagonal_jump_with_kill']])
@@ -63,7 +67,7 @@ class Chess
       @setups = Hash.new
       @setups['Classic'] = Setup.new('Classic',
         [
-          ['Rook','Knight','Bishop',nil,nil,'Bishop','Knight','Rook'],
+          %w[Rook Knight Bishop King Queen Bishop Knight Rook],
           %w[Pawn Pawn Pawn Pawn Pawn Pawn Pawn Pawn]
         ]
       )
@@ -219,19 +223,16 @@ class Chess
   def step_any_dir(piece,position)
     moves = []
     right_dir = piece.dir.cross
-
     var = ([0,1,-1].product [0,1,-1] ).to_a
     var.delete([0,0])
     var.each do |v|
       pos = piece.pos + piece.dir * v[0] + right_dir*v[1]
-
       if(is_on_board?(pos,position) || check_figure(pos,position) == nil) then
         movement = [[piece.pos,pos]]
         notation = NotationTranslationHelper.get_notation(piece,movement)
         move = Move.new(notation,movement,nil)
         moves.push(move)
       end
-
     end
     return moves
   end
@@ -247,7 +248,7 @@ class Chess
       pos = piece.pos + direction
       while(pos[0].abs < 100 && pos[1].abs < 100)  #Ограничение в 100 выставленно, т.к. доски могут быть больше стандартного размера
         figure = check_figure(pos,position)
-        if(!is_on_board?(pos,position) || figure.class == Piece)
+        if(!is_on_board?(pos,position) || (figure.class == Piece && figure.team_color == piece.team_color))
           break
         end
         moves.push(give_move(figure,piece,pos))
@@ -268,7 +269,7 @@ class Chess
       pos = piece.pos + direction
       while(pos[0].abs < 100 && pos[1].abs < 100)  #Ограничение в 100 выставленно, т.к. доски могут быть больше стандартного размера
         figure = check_figure(pos,position)
-        if(!is_on_board?(pos,position) || figure.class == Piece)
+        if(!is_on_board?(pos,position) || (figure.class == Piece && figure.team_color == piece.team_color))
           break
         end
         moves.push(give_move(figure,piece,pos))
@@ -288,6 +289,26 @@ class Chess
       pos = piece.pos + direction
       figure = check_figure(pos,position)
       if(!is_on_board?(pos,position))
+        next
+      end
+      moves.push(give_move(figure,piece,pos))
+    end
+    return moves
+  end
+
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
+  #Ходит по всем клеткам в своем радиусе с возможностью убить, как король
+  def step_any_dir_with_kill(piece,position)
+    moves = []
+    right_dir = piece.dir.cross
+    var = ([0,1,-1].product [0,1,-1] ).to_a
+    var.delete([0,0])
+    var.each do |v|
+      pos = piece.pos + piece.dir * v[0] + right_dir * v[1]
+      figure = check_figure(pos,position)
+      if(!is_on_board?(pos,position) || (figure.class == Piece && figure.team_color == piece.team_color))
         next
       end
       moves.push(give_move(figure,piece,pos))
