@@ -68,7 +68,7 @@ class Chess
       @setups = Hash.new
       @setups['Classic'] = Setup.new('Classic',
         [
-          ['Rook', nil, nil, 'King', nil, nil, nil, 'Rook'],
+          %w[Rook Knight Bishop King Queen Bishop Knight Rook],
           %w[Pawn Pawn Pawn Pawn Pawn Pawn Pawn Pawn]
         ]
       )
@@ -139,7 +139,7 @@ class Chess
   #piece - Piece
   #positiong - Position
   #return - Array[Move]
-  #Рокировка, работает по наводке на королеву
+  #Рокировка
   def step_staight_and_castling(piece, position)
     moves = []
     distances = [Vector[0,1],Vector[1,0],Vector[0,-1],Vector[-1,0]]
@@ -150,13 +150,16 @@ class Chess
       pos = piece.pos + direction
       while(pos[0].abs < 100 && pos[1].abs < 100)  #Ограничение в 100 выставленно, т.к. доски могут быть больше стандартного размера
         figure = check_figure(pos,position)
-        if(!is_on_board?(pos,position) || figure.class == Piece)
+        if(!is_on_board?(pos,position) || figure.class == Piece) then
           if(figure.class == Piece && position.board.matrix[figure.pos[0]][figure.pos[1]].piece_description.name == 'King' && position.board.matrix[figure.pos[0]][figure.pos[1]].data[:Count_of_move] == 0 ) then
-            notation = NotationTranslationHelper.get_notation(piece,[[piece.pos,pos]])
+            notation = '0-0'
+            if((piece.pos - figure.pos).magnitude > 3.1 )
+              notation = '0-0-0'
+            end
             move = Move.new(notation,[[piece.pos,pos - direction],[pos,pos - direction * 2]],nil)
             moves.push(move)
-          break
           end
+          break
         end
         pos = pos + direction
       end
