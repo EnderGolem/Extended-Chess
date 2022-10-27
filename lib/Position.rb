@@ -14,7 +14,7 @@ class Position
 =end
   SKIP_MOVE = Move.new(' ')
 
-  def initialize(board,colors,player_defeat_conditions,player_win_conditions,no_move_policy,turn_num = 1, cur_subturn = 0)
+  def initialize(board,colors,player_defeat_conditions,player_win_conditions,possible_moves_postprocessors,no_move_policy,turn_num = 1, cur_subturn = 0)
     @board = board
     @colors = colors
     @active_players = colors
@@ -22,6 +22,7 @@ class Position
     @losers = []    #format: [[color, lose_reason:string],...]
     @player_defeat_conditions = player_defeat_conditions
     @player_win_conditions = player_win_conditions
+    @possible_moves_postprocessors = possible_moves_postprocessors  #format Hash{player_color ->  procedure(Move[] possible_moves)}
     @no_move_policy = no_move_policy
     @turn_num = turn_num
     @cur_subturn = cur_subturn
@@ -43,6 +44,7 @@ class Position
         end
       end
     end
+    @possible_moves_postprocessors[@colors[@cur_subturn]]&.each {|pp| pp.call(@possible_moves)}
   end
 
   #notation - String
@@ -69,9 +71,6 @@ class Position
         check_losers_and_winners
         if @is_final then return end
       end
-      puts "losers: #{losers}"
-      puts "winners: #{winners}"
-      puts @is_final
     end
   end
 

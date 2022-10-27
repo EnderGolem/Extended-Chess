@@ -63,7 +63,7 @@ class Chess
       )
       @setups['test1'] = Setup.new('test1',
         [[nil, nil, nil, nil],
-                 [ nil,'Man',nil ,nil]]
+                 [ nil,'!Man',nil ,nil]]
       )
 
       @setups['Checkers'] = Setup.new('Checkers',
@@ -75,7 +75,12 @@ class Chess
       )
       @end_game_conditions = Hash.new
       @end_game_conditions['Piece_lost'] = method(:lost_all_pieces)
+      @end_game_conditions['Chiefs_lost'] = method(:lost_all_chiefs)
       @end_game_conditions['All_opponents_lost'] = method(:all_opponents_lost)
+
+      @possible_moves_postprocessors = Hash.new
+      @possible_moves_postprocessors['Mandatory_killings'] = method(:mandatory_killings)
+
       @modes = Hash.new
       @modes['Classic'] = Mode.new(@boards['Square8x8'],
                                    [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
@@ -93,8 +98,9 @@ class Chess
                                 [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
                                  Spawner.new(Vector[3,3],Vector[-1,0],Vector[0,-1])],
                                 2,2,['test1'],
-                                [@end_game_conditions['Piece_lost']],
-                                [@end_game_conditions["All_opponents_lost"]])
+                                [@end_game_conditions['Chiefs_lost']],
+                                [@end_game_conditions["All_opponents_lost"]],
+                                [@possible_moves_postprocessors['Mandatory_killings']])
     end
 
   #piece - Piece
@@ -268,6 +274,30 @@ class Chess
       return 'All opponents lost!'
     end
     return nil
+  end
+
+  def all_opponents_won(player_color,position)
+    if(position.winners.length == position.colors.length-1 && position.active_players.include?(player_color)) then
+      return 'All opponents won!'
+    end
+    return nil
+  end
+  def lost_all_chiefs(player_color,position)
+    c = 0
+    position.board.matrix.each do |line|
+      c+= line.count { |p| p.class == Piece && p.player_color == player_color && p.is_chief}
+    end
+    if c == 0 then
+      return 'Lost all chiefs!'
+    end
+    return nil
+  end
+  #постобработчик возможных ходов, который обязывает игрока делать взятие фигуры
+  # если оно возможно
+  def mandatory_killings(possible_moves)
+    if possible_moves.values.count { |move| !move.removing.nil? && move.removing.length>0} then
+      possible_moves.delete_if { |key,value| value.removing.nil? || value.removing.length==0}
+    end
   end
   
   #pos - Vector
