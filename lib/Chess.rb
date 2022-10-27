@@ -37,6 +37,9 @@ class Chess
 
       @movement_rules = Hash.new
       movement_rules['step_forward'] = method(:step_forward)
+      movement_rules['step_forward_horse'] = method(:step_forward_horse)
+      movement_rules['step_forward_bishop'] = method(:step_forward_bishop)
+      movement_rules['step_forward_rook'] = method(:step_forward_rook)
       movement_rules['step_one_big_forward'] = method(:step_one_big_forward)
       movement_rules['step_straight_line'] = method(:step_straight_line)
       movement_rules['step_staight_and_castling'] = method(:step_staight_and_castling)
@@ -45,6 +48,9 @@ class Chess
       movement_rules['step_any_dir_with_kill'] = method(:step_any_dir_with_kill)
       movement_rules['step_diagonal_right'] = method(:step_diagonal_right)
       movement_rules['step_diagonal_left'] = method(:step_diagonal_left)
+      movement_rules['step_diagonal_right_with_killing'] = method(:step_diagonal_right_with_killing)
+      movement_rules['step_diagonal_left_with_killing'] = method(:step_diagonal_left_with_killing)
+      movement_rules['pawn_attack'] = method(:pawn_attack)
       movement_rules['diagonal_jump_with_kill'] = method(:diagonal_jump_with_kill)
       movement_rules['verhor_jump_with_kill'] = method(:verhor_jump_with_kill)
       movement_rules['step_any_dir'] = method(:step_any_dir)
@@ -52,10 +58,12 @@ class Chess
 
 
       @pieces = Hash.new
-      @pieces['Pawn'] = PieceDescription.new("Pawn","","p",[movement_rules['step_forward'],movement_rules['step_one_big_forward']])
+      @pieces['Pawn'] = PieceDescription.new("Pawn","","p",[movement_rules['step_forward'],movement_rules['step_one_big_forward'],
+                                                            movement_rules['step_forward_horse'],movement_rules['step_forward_bishop'],movement_rules['step_forward_rook'],
+                                                            movement_rules['pawn_attack']])
       @pieces['Rook'] = PieceDescription.new("Rook","r","r",[movement_rules['step_straight_line'],movement_rules['step_staight_and_castling']])
       @pieces['Bishop'] = PieceDescription.new("Bishop","b","b",[movement_rules['step_diagonal_line']])
-      @pieces['Knight'] = PieceDescription.new("Horse","h","h",[movement_rules['step_L']])
+      @pieces['Knight'] = PieceDescription.new("Knight","h","h",[movement_rules['step_L']])
       @pieces['King'] = PieceDescription.new("King","K","K",[movement_rules['step_any_dir_with_kill']])
       @pieces['Queen'] = PieceDescription.new("Queen","Q","Q",[movement_rules['step_straight_line'],movement_rules['step_diagonal_line']])
       @pieces['Man'] = PieceDescription.new("Man","m","m",
@@ -137,8 +145,9 @@ class Chess
     notation = NotationTranslationHelper.get_notation(piece,movement)
     if(is_pos_on_finish_line(movement[0][1],piece.dir,position)) then
       removing = [piece.pos]
-      spawning = [movement[0][1],piece.team_color,piece.player_color,piece.dir,'Queen']
+      spawning = [[movement[0][1],piece.team_color,piece.player_color,piece.dir,'Queen']]
       notation = NotationTranslationHelper.get_notation(piece,movement) + 'Q'
+      return [Move.new(notation,nil,removing,spawning)]
     end
     return [Move.new(notation,movement)]
   end
@@ -155,9 +164,9 @@ class Chess
     notation = NotationTranslationHelper.get_notation(piece,movement)
     if(is_pos_on_finish_line(movement[0][1],piece.dir,position)) then
       removing = [piece.pos]
-      spawning = [movement[0][1],piece.team_color,piece.player_color,piece.dir,'Knight']
+      spawning = [[movement[0][1],piece.team_color,piece.player_color,piece.dir,'Knight']]
       notation = NotationTranslationHelper.get_notation(piece,movement) + 'k'
-      return [Move.new(notation,movement)]
+      return [Move.new(notation,nil,removing,spawning)]
     end
     return []
   end
@@ -174,9 +183,9 @@ class Chess
     notation = NotationTranslationHelper.get_notation(piece,movement)
     if(is_pos_on_finish_line(movement[0][1],piece.dir,position)) then
       removing = [piece.pos]
-      spawning = [movement[0][1],piece.team_color,piece.player_color,piece.dir,'Rook']
+      spawning = [[movement[0][1],piece.team_color,piece.player_color,piece.dir,'Rook']]
       notation = NotationTranslationHelper.get_notation(piece,movement) + 'r'
-      return [Move.new(notation,movement)]
+      return [Move.new(notation,nil,removing,spawning)]
     end
     return []
   end
@@ -193,9 +202,9 @@ class Chess
     notation = NotationTranslationHelper.get_notation(piece,movement)
     if(is_pos_on_finish_line(movement[0][1],piece.dir,position)) then
       removing = [piece.pos]
-      spawning = [movement[0][1],piece.team_color,piece.player_color,piece.dir,'Bishop']
+      spawning = [[movement[0][1],piece.team_color,piece.player_color,piece.dir,'Bishop']]
       notation = NotationTranslationHelper.get_notation(piece,movement) + 'b'
-      return [Move.new(notation,movement)]
+      return [Move.new(notation,nil,removing,spawning)]
     end
     return []
   end
@@ -289,6 +298,24 @@ class Chess
     return [Move.new(notation,movement)]
 
   end
+
+  def step_diagonal_right_with_killing(piece, position)
+    right_dir = piece.dir.cross + piece.dir
+    pos = piece.pos + right_dir
+    if(!is_on_board?(piece.pos + right_dir,position)) then
+      return []
+    end
+
+    f = check_figure(pos,position)
+    if(f != nil && f.team_color != piece.team_color) then
+      movement = [[piece.pos,pos]]
+      removing = [pos]
+      notation = NotationTranslationHelper.get_notation(piece,movement)
+      return [Move.new(notation,movement,removing)]
+    else
+      return step_diagonal_right(piece,position)
+    end
+  end
   #piece - Piece
   #positiong - Position
   #return - Array[Move]
@@ -303,7 +330,48 @@ class Chess
     return [Move.new(notation,movement)]
 
   end
-  
+
+  def step_diagonal_left_with_killing(piece, position)
+    left_dir = -piece.dir.cross + piece.dir
+    pos = piece.pos + left_dir
+    if(!is_on_board?(pos,position)) then
+      return []
+    end
+
+    f = check_figure(pos,position)
+    if(f != nil && f.team_color != piece.team_color) then
+      movement = [[piece.pos,pos]]
+      removing = [pos]
+      notation = NotationTranslationHelper.get_notation(piece,movement)
+      return [Move.new(notation,movement,removing)]
+    else
+      return step_diagonal_right(piece,position)
+    end
+  end
+
+  def pawn_attack(piece,position)
+    right_dir = piece.dir.cross + piece.dir
+    left_dir = -piece.dir.cross + piece.dir
+
+    if(is_pos_on_finish_line(piece.pos + piece.dir,piece.dir,position)) then
+      moves = []
+      [piece.pos + right_dir,piece.pos + left_dir].each do |pos|
+        figure = check_figure(pos,position)
+        if(figure.class == Piece && figure.team_color != piece.team_color) then
+          ['Queen', 'Rook', 'Bishop', 'Knight'].each do |p|
+            removing = [piece.pos]
+            spawning = [[pos,piece.team_color,piece.player_color,piece.dir,p]]
+            notation = NotationTranslationHelper.get_notation(piece,[[piece.pos,pos]]) + @pieces[p].char_name
+            m = Move.new(notation,nil,removing,spawning)
+            moves.push(m)
+          end
+        end
+      end
+      return moves
+    else
+      return step_diagonal_right_with_killing(piece,position) + step_diagonal_left_with_killing(piece,position)
+    end
+  end
   #piece - Piece
   #positiong - Position
   #TODO Пояснения как ходит
@@ -404,6 +472,11 @@ class Chess
         if(!is_on_board?(pos,position) || (figure.class == Piece && figure.team_color == piece.team_color))
           break
         end
+
+        if(figure.class == Piece && figure.team_color != piece.team_color) then
+          moves.push(give_move(figure,piece,pos))
+          break
+        end
         moves.push(give_move(figure,piece,pos))
         pos = pos + direction
       end
@@ -423,6 +496,10 @@ class Chess
       while(pos[0].abs < 100 && pos[1].abs < 100)  #Ограничение в 100 выставленно, т.к. доски могут быть больше стандартного размера
         figure = check_figure(pos,position)
         if(!is_on_board?(pos,position) || (figure.class == Piece && figure.team_color == piece.team_color))
+          break
+        end
+        if(figure.class == Piece && figure.team_color != piece.team_color) then
+          moves.push(give_move(figure,piece,pos))
           break
         end
         moves.push(give_move(figure,piece,pos))
