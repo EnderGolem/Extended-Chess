@@ -41,7 +41,7 @@ module ExtendedChess
   #game = mode.make_game([player1,player2],[chess.setups['Checkers'],chess.setups['Checkers']])
   player1 = Player.new('Alex',:red)
   player2 = Player.new('Max',:blue)
-  mode = Chess.instance.modes['Giveaway']
+  mode = Chess.instance.modes['Classic']
   game = mode.make_game([player1,player2],[Chess.instance.setups['Classic'],Chess.instance.setups['Classic']])
   game.position.print_board
 
