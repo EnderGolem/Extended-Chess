@@ -287,7 +287,7 @@ class Chess
     distances.each do |direction|
       pos = piece.pos + direction
       figure = check_figure(pos,position)
-      if(!is_on_board?(pos,position))
+      if(!is_on_board?(pos,position) || (figure.class == Piece && figure.team_color == piece.team_color))
         next
       end
       moves.push(give_move(figure,piece,pos))
