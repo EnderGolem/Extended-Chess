@@ -22,14 +22,14 @@ class TestExtendedChess < MiniTest::Test
     game = @mode_classic_chess.make_game([@player1, @player2], [Chess.instance.setups['Classic'], Chess.instance.setups['Classic']])
 
     matrix_chess = [
-        %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 1
+        %w[Rook Knight Bishop Queen King Bishop Knight Rook], # 1
         [ 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn'], # 2
         [    nil,    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 3
         [    nil,    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 4
         [    nil,    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 5
         [    nil,    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 6
         [ 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn'], # 7
-        %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 1
+        %w[Rook Knight Bishop Queen King Bishop Knight Rook], # 1
     ]
 
     assert_equal true, equal_matrix?(game.position.board.matrix, matrix_chess), '1'
@@ -37,14 +37,14 @@ class TestExtendedChess < MiniTest::Test
     assert_equal false, equal_matrix?(game.position.board.matrix, matrix_chess), '2'
 
     matrix_chess = [
-        %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 1
+        %w[Rook Knight Bishop Queen King Bishop Knight Rook], # 1
         [    nil, 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn'], # 2
         [ 'Pawn',    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 3
         [    nil,    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 4
         [    nil,    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 5
         [    nil,    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 6
         [ 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn'], # 7
-        %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 8
+        %w[Rook Knight Bishop Queen King Bishop Knight Rook], # 8
       ]
 
     assert_equal true, equal_matrix?(game.position.board.matrix, matrix_chess), '3'
@@ -55,14 +55,14 @@ class TestExtendedChess < MiniTest::Test
     game.step!('b3-b4') # Ход верхнего игрока
 
     matrix_chess = [
-      %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 1
+      %w[Rook Knight Bishop Queen King Bishop Knight Rook], # 1
       [    nil,    nil, 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn'], # 2
       [ 'Pawn',    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 3
       [    nil, 'Pawn',    nil,    nil,    nil,    nil,    nil,    nil], # 4
       [    nil, 'Pawn',    nil,    nil,    nil,    nil,    nil,    nil], # 5
       [    nil,    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 6
       [ 'Pawn',    nil, 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn'], # 7
-      %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 8
+      %w[Rook Knight Bishop Queen King Bishop Knight Rook], # 8
     ]
 
     assert_equal true, equal_matrix?(game.position.board.matrix, matrix_chess), '4'
@@ -80,14 +80,14 @@ class TestExtendedChess < MiniTest::Test
     game.step!('b3-b4') # Ход верхнего игрока
 
     matrix_chess = [
-      %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 1
+      %w[Rook Knight Bishop Queen King Bishop Knight Rook], # 1
       [    nil,    nil, 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn'], # 2
       [ 'Pawn',    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 3
       [    nil, 'Pawn',    nil,    nil,    nil,    nil,    nil,    nil], # 4
       [    nil, 'Pawn',    nil,    nil,    nil,    nil,    nil,    nil], # 5
       [    nil,    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 6
       [ 'Pawn',    nil, 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn'], # 7
-      %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 8
+      %w[Rook Knight Bishop Queen King Bishop Knight Rook], # 8
     ]
 
     assert_equal true, equal_matrix?(game.position.board.matrix, matrix_chess), '1'
@@ -99,14 +99,14 @@ class TestExtendedChess < MiniTest::Test
     # Право хода сохраняется за нижним игроком после невыполненного хода
     game.step!('c7-c6') # Ход нижнего игрока
     matrix_chess = [
-      %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 1
+      %w[Rook Knight Bishop Queen King Bishop Knight Rook], # 1
       [    nil,    nil, 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn'], # 2
       [ 'Pawn',    nil,    nil,    nil,    nil,    nil,    nil,    nil], # 3
       [    nil, 'Pawn',    nil,    nil,    nil,    nil,    nil,    nil], # 4
       [    nil, 'Pawn',    nil,    nil,    nil,    nil,    nil,    nil], # 5
       [    nil,    nil, 'Pawn',    nil,    nil,    nil,    nil,    nil], # 6
       [ 'Pawn',    nil,    nil, 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn'], # 7
-      %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 8
+      %w[Rook Knight Bishop Queen King Bishop Knight Rook], # 8
     ]
 
     assert_equal true, equal_matrix?(game.position.board.matrix, matrix_chess), '3'
@@ -118,14 +118,14 @@ class TestExtendedChess < MiniTest::Test
     # Проверка на то, что право хода у другого игрока
     game.step!('c2-c3') # Ход верхнего игрока
     matrix_chess = [
-      %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 1
+      %w[Rook Knight Bishop Queen King Bishop Knight Rook], # 1
       [    nil,    nil,   nil , 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn'], # 2
       [ 'Pawn',    nil, 'Pawn',    nil,    nil,    nil,    nil,    nil], # 3
       [    nil, 'Pawn',    nil,    nil,    nil,    nil,    nil,    nil], # 4
       [    nil, 'Pawn',    nil,    nil,    nil,    nil,    nil,    nil], # 5
       [    nil,    nil, 'Pawn',    nil,    nil,    nil,    nil,    nil], # 6
       [ 'Pawn',    nil,    nil, 'Pawn', 'Pawn', 'Pawn', 'Pawn', 'Pawn'], # 7
-      %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 8
+      %w[Rook Knight Bishop Queen King Bishop Knight Rook], # 8
     ]
 
     assert_equal true, equal_matrix?(game.position.board.matrix, matrix_chess), '5'

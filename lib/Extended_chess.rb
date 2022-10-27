@@ -9,8 +9,8 @@ require_relative 'Helpers/notation_translation_helper'
 
 
 module ExtendedChess
-interface = Interface.new()
-interface.start()
+  #interface = Interface.new()
+  #interface.start()
 =begin
   chess = Chess.new
   mode = chess.modes['Classic']
@@ -41,7 +41,7 @@ interface.start()
   #game = mode.make_game([player1,player2],[chess.setups['Checkers'],chess.setups['Checkers']])
   player1 = Player.new('Alex',:red)
   player2 = Player.new('Max',:blue)
-  mode = Chess.instance.modes['Classic']
+  mode = Chess.instance.modes['Giveaway']
   game = mode.make_game([player1,player2],[Chess.instance.setups['Classic'],Chess.instance.setups['Classic']])
   game.position.print_board
 
