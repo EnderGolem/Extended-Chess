@@ -23,6 +23,11 @@ class Mode
   end
   # Создает игру в выбранном режиме с конкретными игроками, сетапами и параметрами
   def make_game(players,setups)
+<<<<<<< Updated upstream
+=======
+    # board = @board.dup
+    board = Board.new(Array.new(@board.matrix.length){|i| Array.new(@board.matrix[0].length){|j| @board.matrix[i][j].dup}})
+>>>>>>> Stashed changes
     setups.each_index do |ind|
       i = j = 0
 
@@ -36,14 +41,14 @@ class Mode
           else
             is_chief = false
             pn = pName.dup
-            p pName
+            # p pName
             #Если в записи сетапа перед названием фигуры стоит !
             # то помечаем фигуру как главную
             if(pn[0] == '!') then
               pn.delete_prefix!('!')
               is_chief = true
             end
-            p is_chief
+            # p is_chief
 
             @board.matrix[cur_pos[0]][cur_pos[1]] =
               Piece.new(cur_pos,players[ind].color,players[ind].color,@spawn[ind].up_dir,Chess.instance.pieces[pn],is_chief)
