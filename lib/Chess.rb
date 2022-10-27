@@ -1,3 +1,4 @@
+require 'singleton'
 require_relative 'Board'
 require_relative 'Move'
 require_relative 'Piece'
@@ -8,6 +9,7 @@ require_relative 'spawner'
 require_relative 'Helpers/notation_translation_helper'
 
 class Chess
+  include Singleton
   attr_reader :boards, :movement_rules, :pieces, :modes, :setups
     def initialize
       @boards = Hash.new
@@ -135,6 +137,35 @@ class Chess
     return [Move.new(notation,movement)]
   end
 
+  def add_board(name,board)
+    if(!@boards.has_key?(name) && !board.nil? && board.class == Board) then
+      @boards[name] = board
+    end
+  end
+
+  def add_movement_rule(name,method)
+    if(!@movement_rules.has_key?(name) && !method.nil?) then
+      @movement_rules[name] = method
+    end
+  end
+
+  def add_piece(name,piece)
+    if(!@pieces.has_key?(name) && !piece.nil? && piece.class == PieceDescription) then
+      @pieces[name] = piece
+    end
+  end
+
+  def add_setup(name,setup)
+    if(!@setups.has_key?(name) && !setup.nil? && setup.class == Setup) then
+      @setups[name] = setup
+    end
+  end
+
+  def add_mode(name,mode)
+    if(!@modes.has_key?(name) && !mode.nil? && mode.class == Mode) then
+      @modes[name] = mode
+    end
+  end
   #piece - Piece
   #positiong - Position
   #return - Array[Move]

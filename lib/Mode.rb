@@ -23,7 +23,6 @@ class Mode
   end
   # Создает игру в выбранном режиме с конкретными игроками, сетапами и параметрами
   def make_game(players,setups)
-    chess = Chess.new
     setups.each_index do |ind|
       i = j = 0
 
@@ -47,7 +46,7 @@ class Mode
             p is_chief
 
             @board.matrix[cur_pos[0]][cur_pos[1]] =
-              Piece.new(cur_pos,players[ind].color,players[ind].color,@spawn[ind].up_dir,chess.pieces[pn],is_chief)
+              Piece.new(cur_pos,players[ind].color,players[ind].color,@spawn[ind].up_dir,Chess.instance.pieces[pn],is_chief)
 
           end
           j += 1

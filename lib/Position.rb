@@ -161,10 +161,10 @@ class Position
       end
     end
     if(!move.spawn.nil?) then
-      chess = Chess.new
+
 
       move.spawn.each do |sp|
-        @board.matrix[sp[0][0]][sp[0][1]] = Piece.new(sp[0],sp[1],sp[2],sp[3],chess.pieces[sp[4]])
+        @board.matrix[sp[0][0]][sp[0][1]] = Piece.new(sp[0],sp[1],sp[2],sp[3],Chess.instance.pieces[sp[4]])
       end
     end
     #Perhaps some effects from the movement
