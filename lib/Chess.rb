@@ -128,14 +128,76 @@ class Chess
   #piece - Piece
   #positiong - Position
   #return - Array[Move]
-  #Делает шаг вперед
+  #Делает шаг вперед и становиться королевой
   def step_forward(piece, position)
     if(check_figure(piece.pos + piece.dir,position) != nil) then
       return []
     end
     movement = [[piece.pos,piece.pos + piece.dir]]
     notation = NotationTranslationHelper.get_notation(piece,movement)
+    if(is_pos_on_finish_line(movement[0][1],piece.dir,position)) then
+      removing = [piece.pos]
+      spawning = [movement[0][1],piece.team_color,piece.player_color,piece.dir,'Queen']
+      notation = NotationTranslationHelper.get_notation(piece,movement) + 'Q'
+    end
     return [Move.new(notation,movement)]
+  end
+
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
+  #Делает шаг вперед и становиться конем
+  def step_forward_horse(piece, position)
+    if(check_figure(piece.pos + piece.dir,position) != nil) then
+      return []
+    end
+    movement = [[piece.pos,piece.pos + piece.dir]]
+    notation = NotationTranslationHelper.get_notation(piece,movement)
+    if(is_pos_on_finish_line(movement[0][1],piece.dir,position)) then
+      removing = [piece.pos]
+      spawning = [movement[0][1],piece.team_color,piece.player_color,piece.dir,'Knight']
+      notation = NotationTranslationHelper.get_notation(piece,movement) + 'k'
+      return [Move.new(notation,movement)]
+    end
+    return []
+  end
+
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
+  #Делает шаг вперед и становиться ладьей
+  def step_forward_rook(piece, position)
+    if(check_figure(piece.pos + piece.dir,position) != nil) then
+      return []
+    end
+    movement = [[piece.pos,piece.pos + piece.dir]]
+    notation = NotationTranslationHelper.get_notation(piece,movement)
+    if(is_pos_on_finish_line(movement[0][1],piece.dir,position)) then
+      removing = [piece.pos]
+      spawning = [movement[0][1],piece.team_color,piece.player_color,piece.dir,'Rook']
+      notation = NotationTranslationHelper.get_notation(piece,movement) + 'r'
+      return [Move.new(notation,movement)]
+    end
+    return []
+  end
+
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
+  #Делает шаг вперед и становиться ферзем
+  def step_forward_bishop(piece, position)
+    if(check_figure(piece.pos + piece.dir,position) != nil) then
+      return []
+    end
+    movement = [[piece.pos,piece.pos + piece.dir]]
+    notation = NotationTranslationHelper.get_notation(piece,movement)
+    if(is_pos_on_finish_line(movement[0][1],piece.dir,position)) then
+      removing = [piece.pos]
+      spawning = [movement[0][1],piece.team_color,piece.player_color,piece.dir,'Bishop']
+      notation = NotationTranslationHelper.get_notation(piece,movement) + 'b'
+      return [Move.new(notation,movement)]
+    end
+    return []
   end
 
   def add_board(name,board)
