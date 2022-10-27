@@ -3,6 +3,7 @@ require_relative 'Chess'
 
 #Режим игры
 class Mode
+  attr_reader :allowed_setups
   def initialize(board,spawns,team_count,player_count,allowed_setups,player_defeat_conditions,player_win_conditions,possible_moves_postprocessors=nil, no_move_policy = 'skipping')
     @board = board
     @spawn = spawns

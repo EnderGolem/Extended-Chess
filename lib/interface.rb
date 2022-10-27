@@ -4,12 +4,10 @@ require_relative 'Mode'
 
 
 class Interface
-  attr_reader :chess
+    def initialize
 
-  def initialize
-    @chess = Chess.new()
   end
-  def interface()
+  def interface
 
     puts "Select the number of players"
     puts "You can choose only two"
@@ -34,8 +32,8 @@ class Interface
 
     puts "Choose mode"
     mode = choose_mode()
-
-    setups = choose_setups(players)
+    puts mode.allowed_setups
+    setups = choose_setups(players, mode)
 
     puts "START GAME"
     game = mode.make_game(players, setups)
@@ -53,39 +51,40 @@ class Interface
         p game.get_result
         break
       end
-      #p game.p
     end
   end
 
-  def choose_setups(players)
+  #players - Array[Class: player]
+  #mode - Mode
+  def choose_setups(players, mode)
     setups = Array.new(players.size)
     players.each_index  do |ind|
       player = players[ind]
       puts ("Choose setup, player: " + player.name).colorize(player.color)
-      @chess.setups.each_key{ |setup_key|    puts setup_key }
+      mode.allowed_setups.each{ |setup_key|    puts setup_key }
       setup = ""
       loop do
         setup = readline().chomp
-        if(@chess.setups.has_key?(setup))
+        if(mode.allowed_setups.include?(setup))
           break
         end
         puts "Not a correct setup".colorize(:red)
       end
-      setups[ind] = @chess.setups[setup]
+      setups[ind] = Chess.instance.setups[setup]
     end
     return setups
   end
   def choose_mode
-    @chess.modes.each_value { |mode|   puts @chess.modes.key(mode) }
+    Chess.instance.modes.each_value { |mode|   puts Chess.instance.modes.key(mode) }
     mode = ""
     loop do
       mode = readline().chomp
-      if(@chess.modes.has_key?(mode))
+      if(Chess.instance.modes.has_key?(mode))
         break
       end
       puts "Not a correct mod".colorize(:red)
     end
-    return @chess.modes[mode]
+    return Chess.instance.modes[mode]
   end
 
 
