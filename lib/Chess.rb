@@ -1,3 +1,4 @@
+require 'singleton'
 require_relative 'Board'
 require_relative 'Move'
 require_relative 'Piece'
@@ -8,6 +9,7 @@ require_relative 'spawner'
 require_relative 'Helpers/notation_translation_helper'
 
 class Chess
+  include Singleton
   attr_reader :boards, :movement_rules, :pieces, :modes, :setups
     def initialize
       @boards = Hash.new
@@ -72,7 +74,7 @@ class Chess
       )
       @setups['test1'] = Setup.new('test1',
         [[nil, nil, nil, nil],
-                 [ nil,'Man',nil ,nil]]
+                 [ nil,'!Man',nil ,nil]]
       )
 
       @setups['Checkers'] = Setup.new('Checkers',
@@ -84,7 +86,13 @@ class Chess
       )
       @end_game_conditions = Hash.new
       @end_game_conditions['Piece_lost'] = method(:lost_all_pieces)
+      @end_game_conditions['Chiefs_lost'] = method(:lost_all_chiefs)
       @end_game_conditions['All_opponents_lost'] = method(:all_opponents_lost)
+      @end_game_conditions['All_opponents_won'] = method(:all_opponents_won)
+
+      @possible_moves_postprocessors = Hash.new
+      @possible_moves_postprocessors['Mandatory_killings'] = method(:mandatory_killings)
+
       @modes = Hash.new
       @modes['Classic'] = Mode.new(@boards['Square8x8'],
                                    [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
@@ -92,6 +100,13 @@ class Chess
                                    2,2,['Classic'],
                                    [@end_game_conditions['Piece_lost']],
                                    [@end_game_conditions["All_opponents_lost"]])
+      @modes['Giveaway'] = Mode.new(@boards['Square8x8'],
+                                   [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
+                                    Spawner.new(Vector[7,0],Vector[-1,0],Vector[0,1])],
+                                   2,2,['Classic'],
+                                   [@end_game_conditions['Piece_lost']],
+                                    [@end_game_conditions['All_opponents_won']],
+                                    [@possible_moves_postprocessors['Mandatory_killings']])
       @modes['Checkers'] = Mode.new(@boards['Square8x8'],
                                    [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
                                     Spawner.new(Vector[7,7],Vector[-1,0],Vector[0,-1])],
@@ -102,8 +117,9 @@ class Chess
                                 [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
                                  Spawner.new(Vector[3,3],Vector[-1,0],Vector[0,-1])],
                                 2,2,['test1'],
-                                [@end_game_conditions['Piece_lost']],
-                                [@end_game_conditions["All_opponents_lost"]])
+                                [@end_game_conditions['Chiefs_lost']],
+                                [@end_game_conditions["All_opponents_lost"]],
+                                [@possible_moves_postprocessors['Mandatory_killings']])
     end
 
   #piece - Piece
@@ -121,6 +137,35 @@ class Chess
     return [Move.new(notation,movement)]
   end
 
+  def add_board(name,board)
+    if(!@boards.has_key?(name) && !board.nil? && board.class == Board) then
+      @boards[name] = board
+    end
+  end
+
+  def add_movement_rule(name,method)
+    if(!@movement_rules.has_key?(name) && !method.nil?) then
+      @movement_rules[name] = method
+    end
+  end
+
+  def add_piece(name,piece)
+    if(!@pieces.has_key?(name) && !piece.nil? && piece.class == PieceDescription) then
+      @pieces[name] = piece
+    end
+  end
+
+  def add_setup(name,setup)
+    if(!@setups.has_key?(name) && !setup.nil? && setup.class == Setup) then
+      @setups[name] = setup
+    end
+  end
+
+  def add_mode(name,mode)
+    if(!@modes.has_key?(name) && !mode.nil? && mode.class == Mode) then
+      @modes[name] = mode
+    end
+  end
   #piece - Piece
   #positiong - Position
   #return - Array[Move]
@@ -360,6 +405,31 @@ class Chess
       return 'All opponents lost!'
       end
     return nil
+  end
+
+  def all_opponents_won(player_color,position)
+    if(position.winners.length == position.colors.length-1 && position.active_players.include?(player_color)) then
+      return 'All opponents won!'
+    end
+    return nil
+  end
+  def lost_all_chiefs(player_color,position)
+    c = 0
+    position.board.matrix.each do |line|
+      c+= line.count { |p| p.class == Piece && p.player_color == player_color && p.is_chief}
+    end
+    if c == 0 then
+      return 'Lost all chiefs!'
+    end
+    return nil
+  end
+  #постобработчик возможных ходов, который обязывает игрока делать взятие фигуры
+  # если оно возможно
+  def mandatory_killings(possible_moves)
+    p possible_moves.keys
+    if possible_moves.values.count { |move| !move.removing.nil? && move.removing.length>0} then
+      possible_moves.delete_if { |key,value| value.removing.nil? || value.removing.length==0}
+    end
   end
   
   #pos - Vector
