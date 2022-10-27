@@ -53,11 +53,11 @@ class Chess
 
       @pieces = Hash.new
       @pieces['Pawn'] = PieceDescription.new("Pawn","","p",[movement_rules['step_forward'],movement_rules['step_one_big_forward']])
-      @pieces['Rook'] = PieceDescription.new("Rook","","r",[movement_rules['step_straight_line'],movement_rules['step_staight_and_castling']])
-      @pieces['Bishop'] = PieceDescription.new("Bishop","","b",[movement_rules['step_diagonal_line']])
-      @pieces['Knight'] = PieceDescription.new("Knight","","k",[movement_rules['step_L']])
-      @pieces['King'] = PieceDescription.new("King","","K",[movement_rules['step_any_dir_with_kill']])
-      @pieces['Queen'] = PieceDescription.new("Queen","","Q",[movement_rules['step_straight_line'],movement_rules['step_diagonal_line']])
+      @pieces['Rook'] = PieceDescription.new("Rook","r","r",[movement_rules['step_straight_line'],movement_rules['step_staight_and_castling']])
+      @pieces['Bishop'] = PieceDescription.new("Bishop","b","b",[movement_rules['step_diagonal_line']])
+      @pieces['Knight'] = PieceDescription.new("Horse","h","h",[movement_rules['step_L']])
+      @pieces['King'] = PieceDescription.new("King","K","K",[movement_rules['step_any_dir_with_kill']])
+      @pieces['Queen'] = PieceDescription.new("Queen","Q","Q",[movement_rules['step_straight_line'],movement_rules['step_diagonal_line']])
       @pieces['Man'] = PieceDescription.new("Man","m","m",
                                             [movement_rules['man_step'],
                                              movement_rules['diagonal_jump_with_kill']])
@@ -70,7 +70,7 @@ class Chess
       @setups = Hash.new
       @setups['Classic'] = Setup.new('Classic',
         [
-          %w[Rook Knight Bishop King Queen Bishop Knight Rook],
+          %w[Rook Knight Bishop Queen !King Bishop Knight Rook],
           %w[Pawn Pawn Pawn Pawn Pawn Pawn Pawn Pawn]
         ]
       )
@@ -100,14 +100,14 @@ class Chess
                                    [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
                                     Spawner.new(Vector[7,0],Vector[-1,0],Vector[0,1])],
                                    2,2,['Classic'],
-                                   [@end_game_conditions['Piece_lost']],
+                                   [@end_game_conditions['Chiefs_lost']],
                                    [@end_game_conditions["All_opponents_lost"]])
       @modes['Giveaway'] = Mode.new(@boards['Square8x8'],
                                    [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
                                     Spawner.new(Vector[7,0],Vector[-1,0],Vector[0,1])],
                                    2,2,['Classic'],
-                                   [@end_game_conditions['Piece_lost']],
-                                    [@end_game_conditions['All_opponents_won']],
+                                   [@end_game_conditions['All_opponents_won']],
+                                    [@end_game_conditions['Piece_lost']],
                                     [@possible_moves_postprocessors['Mandatory_killings']])
       @modes['Checkers'] = Mode.new(@boards['Square8x8'],
                                    [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
