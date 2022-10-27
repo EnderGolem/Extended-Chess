@@ -9,13 +9,14 @@ class Piece
     @pos = pos
     @team_color = team_color
     @player_color = player_color
-    @dir = dir
-    @piece_description = piece_description
-    @is_chief = is_chief
-    @data = Hash.new
+    @dir = dir  # Направление движения фигуры
+    @piece_description = piece_description # Описание фигуры
+    @is_chief = is_chief #является ли фигура главной
+    @data = Hash.new # Различные данные фигуры
   end
 
   #position - Position
+  # Подсчитывает возможные ходы
   def calculatePossibleMoves(position)
     moves = Array.new
     @piece_description.rules.each do |rule|
