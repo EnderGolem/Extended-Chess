@@ -112,7 +112,8 @@ class Chess
                                     Spawner.new(Vector[7,7],Vector[-1,0],Vector[0,-1])],
                                    2,2,['Checkers'],
                                     [@end_game_conditions['Piece_lost']],
-                                    [@end_game_conditions["All_opponents_lost"]])
+                                    [@end_game_conditions["All_opponents_lost"]],
+                                    [@possible_moves_postprocessors['Mandatory_killings']])
       @modes['Test'] = Mode.new(@boards['Square4x4'],
                                 [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
                                  Spawner.new(Vector[3,3],Vector[-1,0],Vector[0,-1])],
@@ -426,8 +427,7 @@ class Chess
   #постобработчик возможных ходов, который обязывает игрока делать взятие фигуры
   # если оно возможно
   def mandatory_killings(possible_moves)
-    p possible_moves.keys
-    if possible_moves.values.count { |move| !move.removing.nil? && move.removing.length>0} then
+    if possible_moves.values.count { |move| !move.removing.nil? && move.removing.length>0 } > 0  then
       possible_moves.delete_if { |key,value| value.removing.nil? || value.removing.length==0}
     end
   end

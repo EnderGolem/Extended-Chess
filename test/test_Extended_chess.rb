@@ -3,9 +3,10 @@ require_relative "test_helper"
 class TestExtendedChess < MiniTest::Test
 
   def setup
-      @chess = Chess.new
-      @mode_classic_chess = @chess.modes['Classic']
-      @mode_checkers = @chess.modes['Checkers']
+      #@chess = Chess.new
+      # @chess = Chess.instance
+      @mode_classic_chess = Chess.instance.modes['Classic']
+      @mode_checkers = Chess.instance.modes['Checkers']
       @player1 = Player.new('Alex',:red)
       @player2 = Player.new('Max',:blue)
    end
@@ -18,7 +19,7 @@ class TestExtendedChess < MiniTest::Test
   end
 
   def test_step_forward_chess
-    game = @mode_classic_chess.make_game([@player1, @player2], [@chess.setups['Classic'], @chess.setups['Classic']])
+    game = @mode_classic_chess.make_game([@player1, @player2], [Chess.instance.setups['Classic'], Chess.instance.setups['Classic']])
 
     matrix_chess = [
         %w[Rook Knight Bishop King Queen Bishop Knight Rook], # 1
@@ -66,10 +67,11 @@ class TestExtendedChess < MiniTest::Test
 
     assert_equal true, equal_matrix?(game.position.board.matrix, matrix_chess), '4'
 
+
   end
 
   def test_sequence_move_chess
-    game = @mode_classic_chess.make_game([@player1, @player2], [@chess.setups['Classic'], @chess.setups['Classic']])
+    game = @mode_classic_chess.make_game([@player1, @player2], [Chess.instance.setups['Classic'], Chess.instance.setups['Classic']])
 
     game.step!('a2-a3') # Ход верхнего игрока
     game.step!('b7-b6') # Ход нижнего игрока
@@ -127,11 +129,12 @@ class TestExtendedChess < MiniTest::Test
     ]
 
     assert_equal true, equal_matrix?(game.position.board.matrix, matrix_chess), '5'
+
   end
 
   #TODO: Сделать свою доску и добавить ход с убийством фишки от другого игрока
   def test_diagonal_jump_with_kill_checkers
-    game = @chess.modes['Test'].make_game([@player1,@player2],[@chess.setups['test1'],@chess.setups['test1']])
+    game = Chess.instance.modes['Test'].make_game([@player1,@player2],[Chess.instance.setups['test1'],Chess.instance.setups['test1']])
 
     matrix_checkers = [
       [ nil,   nil,    nil,   nil], # 1
@@ -157,7 +160,7 @@ class TestExtendedChess < MiniTest::Test
 
   #TODO: Сделать свою доску и удостовериться, что последний ход другого игрока так же заканчивает игру
    def test_is_ended_checkers?
-     game = @chess.modes['Test'].make_game([@player1,@player2],[@chess.setups['test1'],@chess.setups['test1']])
+     game = Chess.instance.modes['Test'].make_game([@player1,@player2],[Chess.instance.setups['test1'],Chess.instance.setups['test1']])
      assert_equal false, game.is_ended?, '1'
      game.step!('mb2-d4')
      assert_equal true, game.is_ended?, '2'
@@ -165,17 +168,19 @@ class TestExtendedChess < MiniTest::Test
 
   #TODO: Сделать свою доску и удостовериться в правильном выводе, когда побеждает другой игрок
    def test_get_result_checkers
-     game = @chess.modes['Test'].make_game([@player1,@player2],[@chess.setups['test1'],@chess.setups['test1']])
+     game = Chess.instance.modes['Test'].make_game([@player1,@player2],[Chess.instance.setups['test1'],Chess.instance.setups['test1']])
+
      assert_nil game.get_result, '1' # Тест проходит, если @game.get_result  nil
      game.step!('mb2-d4')
      refute_nil game.get_result, '2' # Тест проходит, если @game.get_result  не nil
 
      assert_equal game.position.winners, [[:red,"All opponents lost!"]], '3'
-     assert_equal game.position.losers,  [[:blue, "Lost all pieces!"]], '4'
+     assert_equal game.position.losers,  [[:blue, "Lost all chiefs!"]], '4'
+
    end
 
   def test_step_diagonal_right_checkers
-    game = @chess.modes['Checkers'].make_game([@player1,@player2],[@chess.setups['Checkers'],@chess.setups['Checkers']])
+    game = Chess.instance.modes['Checkers'].make_game([@player1,@player2],[Chess.instance.setups['Checkers'],Chess.instance.setups['Checkers']])
 
     matrix_checkers = [
       [  'Man',    nil, 'Man',     nil,  'Man',   nil,    'Man',     nil ],  # 1
@@ -236,7 +241,7 @@ class TestExtendedChess < MiniTest::Test
   end
 
   def test_step_diagonal_left_checkers
-    game = @chess.modes['Checkers'].make_game([@player1,@player2],[@chess.setups['Checkers'],@chess.setups['Checkers']])
+    game = Chess.instance.modes['Checkers'].make_game([@player1,@player2],[Chess.instance.setups['Checkers'],Chess.instance.setups['Checkers']])
 
     matrix_checkers = [
       [  'Man',    nil, 'Man',     nil,  'Man',   nil,    'Man',     nil ],  # 1
