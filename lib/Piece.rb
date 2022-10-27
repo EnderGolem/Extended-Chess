@@ -11,8 +11,8 @@ class Piece
     @player_color = player_color
     @dir = dir  # Направление движения фигуры
     @piece_description = piece_description # Описание фигуры
+    @data = {Count_of_move: 0, Moves: Array.new() } # Различные данные фигуры   Hash[[Symbol, data]]
     @is_chief = is_chief #является ли фигура главной
-    @data = Hash.new # Различные данные фигуры
   end
 
   #position - Position

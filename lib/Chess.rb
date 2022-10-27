@@ -37,7 +37,9 @@ class Chess
 
       @movement_rules = Hash.new
       movement_rules['step_forward'] = method(:step_forward)
+      movement_rules['step_one_big_forward'] = method(:step_one_big_forward)
       movement_rules['step_straight_line'] = method(:step_straight_line)
+      movement_rules['step_staight_and_castling'] = method(:step_staight_and_castling)
       movement_rules['step_diagonal_line'] = method(:step_diagonal_line)
       movement_rules['step_L'] = method(:step_L)
       movement_rules['step_any_dir_with_kill'] = method(:step_any_dir_with_kill)
@@ -50,8 +52,8 @@ class Chess
 
 
       @pieces = Hash.new
-      @pieces['Pawn'] = PieceDescription.new("Pawn","","p",[movement_rules['step_forward']])
-      @pieces['Rook'] = PieceDescription.new("Rook","","r",[movement_rules['step_straight_line']])
+      @pieces['Pawn'] = PieceDescription.new("Pawn","","p",[movement_rules['step_forward'],movement_rules['step_one_big_forward']])
+      @pieces['Rook'] = PieceDescription.new("Rook","","r",[movement_rules['step_straight_line'],movement_rules['step_staight_and_castling']])
       @pieces['Bishop'] = PieceDescription.new("Bishop","","b",[movement_rules['step_diagonal_line']])
       @pieces['Knight'] = PieceDescription.new("Knight","","k",[movement_rules['step_L']])
       @pieces['King'] = PieceDescription.new("King","","K",[movement_rules['step_any_dir_with_kill']])
@@ -128,11 +130,9 @@ class Chess
   #return - Array[Move]
   #Делает шаг вперед
   def step_forward(piece, position)
-    #Если впереди нас стоит какая-либо фигураЮ то походить не можем
     if(check_figure(piece.pos + piece.dir,position) != nil) then
       return []
     end
-
     movement = [[piece.pos,piece.pos + piece.dir]]
     notation = NotationTranslationHelper.get_notation(piece,movement)
     return [Move.new(notation,movement)]
@@ -167,6 +167,52 @@ class Chess
       @modes[name] = mode
     end
   end
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
+  #Делает 2 шага  вперед, если до этого не делал вообще шагов
+  def step_one_big_forward(piece, position)
+    if(check_figure(piece.pos + piece.dir, position) != nil && check_figure(piece.pos + piece.dir + piece.dir, position) != nil )
+      return []
+    end
+    if(piece.data[:Count_of_move] != 0)
+      return []
+    end
+    movement = [[piece.pos,piece.pos + piece.dir * 2]]
+    notation = NotationTranslationHelper.get_notation(piece,movement)
+    return [Move.new(notation,movement)]
+  end
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
+  #Рокировка
+  def step_staight_and_castling(piece, position)
+    moves = []
+    distances = [Vector[0,1],Vector[1,0],Vector[0,-1],Vector[-1,0]]
+    if(piece.data[:Count_of_move] != 0)
+      return []
+    end
+    distances.each do |direction|
+      pos = piece.pos + direction
+      while(pos[0].abs < 100 && pos[1].abs < 100)  #Ограничение в 100 выставленно, т.к. доски могут быть больше стандартного размера
+        figure = check_figure(pos,position)
+        if(!is_on_board?(pos,position) || figure.class == Piece) then
+          if(figure.class == Piece && position.board.matrix[figure.pos[0]][figure.pos[1]].piece_description.name == 'King' && position.board.matrix[figure.pos[0]][figure.pos[1]].data[:Count_of_move] == 0 ) then
+            notation = '0-0'
+            if((piece.pos - figure.pos).magnitude > 3.1 )
+              notation = '0-0-0'
+            end
+            move = Move.new(notation,[[piece.pos,pos - direction],[pos,pos - direction * 2]],nil)
+            moves.push(move)
+          end
+          break
+        end
+        pos = pos + direction
+      end
+    end
+    return moves
+  end
+
   #piece - Piece
   #positiong - Position
   #return - Array[Move]
@@ -333,7 +379,7 @@ class Chess
     distances.each do |direction|
       pos = piece.pos + direction
       figure = check_figure(pos,position)
-      if(!is_on_board?(pos,position))
+      if(!is_on_board?(pos,position) || (figure.class == Piece && figure.team_color == piece.team_color))
         next
       end
       moves.push(give_move(figure,piece,pos))
@@ -367,7 +413,6 @@ class Chess
   #return - Move
   #Вспомогательня ф-я для создания ф-й ходьбы
   def give_move(figure, piece, pos)
-
     movement = [[piece.pos,pos]]
     notation = NotationTranslationHelper.get_notation(piece,movement)
     removing = nil
@@ -446,17 +491,5 @@ class Chess
     return is_on_board?(pos,position) && !is_on_board?(pos+dir,position)
   end
 
-  def can_step_forward?(start, maybe_finish, dir)
-    start[0] += dir[0]
-    start[1] += dir[1]
-    if(start == maybe_finish)
-      start[0] -= dir[0]
-      start[1] -= dir[1]
-      return  true
-    end
-    start[0] -= dir[0]
-    start[1] -= dir[1]
-    return  false
-    end
 end
 

@@ -5,10 +5,9 @@ require_relative 'Mode'
 
 class Interface
     def initialize
-
-  end
-  def interface
-
+    end
+  
+  def start
     puts "Select the number of players"
     puts "You can choose only two"
     a = 0

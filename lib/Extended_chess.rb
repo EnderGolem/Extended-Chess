@@ -9,8 +9,8 @@ require_relative 'Helpers/notation_translation_helper'
 
 
 module ExtendedChess
-  #interface = Interface.new()
-  #interface.interface()
+interface = Interface.new()
+interface.start()
 =begin
   chess = Chess.new
   mode = chess.modes['Classic']
