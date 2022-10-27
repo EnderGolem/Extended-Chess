@@ -14,7 +14,7 @@ class Position
 =end
   SKIP_MOVE = Move.new(' ')
 
-  def initialize(board,colors,player_defeat_conditions,player_win_conditions,no_move_policy,turn_num = 1, cur_subturn = 0)
+  def initialize(board,colors,player_defeat_conditions,player_win_conditions,possible_moves_postprocessors,no_move_policy,turn_num = 1, cur_subturn = 0)
     @board = board
     @colors = colors
     @active_players = colors
@@ -22,6 +22,7 @@ class Position
     @losers = []    #format: [[color, lose_reason:string],...]
     @player_defeat_conditions = player_defeat_conditions
     @player_win_conditions = player_win_conditions
+    @possible_moves_postprocessors = possible_moves_postprocessors  #format Hash{player_color ->  procedure(Move[] possible_moves)}
     @no_move_policy = no_move_policy
     @turn_num = turn_num
     @cur_subturn = cur_subturn
@@ -43,6 +44,7 @@ class Position
         end
       end
     end
+    @possible_moves_postprocessors[@colors[@cur_subturn]]&.each {|pp| pp.call(@possible_moves)}
   end
 
   #notation - String
@@ -173,10 +175,10 @@ class Position
       end
     end
     if(!move.spawn.nil?) then
-      chess = Chess.new
+
 
       move.spawn.each do |sp|
-        @board.matrix[sp[0][0]][sp[0][1]] = Piece.new(sp[0],sp[1],sp[2],sp[3],chess.pieces[sp[4]])
+        @board.matrix[sp[0][0]][sp[0][1]] = Piece.new(sp[0],sp[1],sp[2],sp[3],Chess.instance.pieces[sp[4]])
       end
     end
     #Perhaps some effects from the movement
