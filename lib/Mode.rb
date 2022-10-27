@@ -24,6 +24,7 @@ class Mode
   end
   # Создает игру в выбранном режиме с конкретными игроками, сетапами и параметрами
   def make_game(players,setups)
+    board = @board.dup
     setups.each_index do |ind|
       i = j = 0
 
@@ -33,7 +34,7 @@ class Mode
         line.each do |pName|
           cur_pos = @spawn[ind].startPos + j * @spawn[ind].right_dir + i * @spawn[ind].up_dir
           if(pName == nil) then
-            @board.matrix[cur_pos[0]][cur_pos[1]] = 0
+            board.matrix[cur_pos[0]][cur_pos[1]] = 0
           else
             is_chief = false
             pn = pName.dup
@@ -46,7 +47,7 @@ class Mode
             end
             p is_chief
 
-            @board.matrix[cur_pos[0]][cur_pos[1]] =
+            board.matrix[cur_pos[0]][cur_pos[1]] =
               Piece.new(cur_pos,players[ind].color,players[ind].color,@spawn[ind].up_dir,Chess.instance.pieces[pn],is_chief)
 
           end
@@ -60,7 +61,7 @@ class Mode
     players.each do |pl|
       postprocessors[pl.color] = @possible_moves_postprocessors
     end
-    position = Position.new(@board,players.map {|player| player.color},@player_defeat_conditions,@player_win_conditions,postprocessors,@no_move_policy)
+    position = Position.new(board,players.map {|player| player.color},@player_defeat_conditions,@player_win_conditions,postprocessors,@no_move_policy)
     return Game.new(players,position)
   end
 end
