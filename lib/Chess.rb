@@ -35,6 +35,7 @@ class Chess
 
       @movement_rules = Hash.new
       movement_rules['step_forward'] = method(:step_forward)
+      movement_rules['step_one_big_forward'] = method(:step_one_big_forward)
       movement_rules['step_straight_line'] = method(:step_straight_line)
       movement_rules['step_diagonal_line'] = method(:step_diagonal_line)
       movement_rules['step_L'] = method(:step_L)
@@ -48,7 +49,7 @@ class Chess
 
 
       @pieces = Hash.new
-      @pieces['Pawn'] = PieceDescription.new("Pawn","","p",[movement_rules['step_forward']])
+      @pieces['Pawn'] = PieceDescription.new("Pawn","","p",[movement_rules['step_forward'],movement_rules['step_one_big_forward']])
       @pieces['Rook'] = PieceDescription.new("Rook","","r",[movement_rules['step_straight_line']])
       @pieces['Bishop'] = PieceDescription.new("Bishop","","b",[movement_rules['step_diagonal_line']])
       @pieces['Knight'] = PieceDescription.new("Knight","","k",[movement_rules['step_L']])
@@ -111,12 +112,26 @@ class Chess
   #return - Array[Move]
   #Делает шаг вперед
   def step_forward(piece, position)
-    #Если впереди нас стоит какая-либо фигураЮ то походить не можем
     if(check_figure(piece.pos + piece.dir,position) != nil) then
       return []
     end
-
     movement = [[piece.pos,piece.pos + piece.dir]]
+    notation = NotationTranslationHelper.get_notation(piece,movement)
+    return [Move.new(notation,movement)]
+  end
+
+  #piece - Piece
+  #positiong - Position
+  #return - Array[Move]
+  #Делает 2 шага  вперед, если до этого не делал вообще шагов
+  def step_one_big_forward(piece, position)
+    if(check_figure(piece.pos + piece.dir, position) != nil && check_figure(piece.pos + piece.dir + piece.dir, position) != nil )
+      return []
+    end
+    if(piece.data[:Count_of_move] != 0)
+      return []
+    end
+    movement = [[piece.pos,piece.pos + piece.dir * 2]]
     notation = NotationTranslationHelper.get_notation(piece,movement)
     return [Move.new(notation,movement)]
   end

@@ -11,7 +11,7 @@ class Piece
     @player_color = player_color
     @dir = dir  # Направление движения фигуры
     @piece_description = piece_description # Описание фигуры
-    @data = {Count_of_move: 1, Moves: Array.new() } # Различные данные фигуры   Hash[[Symbol, data]]
+    @data = {Count_of_move: 0, Moves: Array.new() } # Различные данные фигуры   Hash[[Symbol, data]]
   end
 
   #position - Position
