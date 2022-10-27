@@ -376,17 +376,5 @@ class Chess
     return is_on_board?(pos,position) && !is_on_board?(pos+dir,position)
   end
 
-  def can_step_forward?(start, maybe_finish, dir)
-    start[0] += dir[0]
-    start[1] += dir[1]
-    if(start == maybe_finish)
-      start[0] -= dir[0]
-      start[1] -= dir[1]
-      return  true
-    end
-    start[0] -= dir[0]
-    start[1] -= dir[1]
-    return  false
-    end
 end
 
