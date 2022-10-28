@@ -28,7 +28,7 @@ To add new boards, move rules, figure setups and mods, use the add_board, add_mo
 
 ## Notations  
 Notations in chess:  
-The usual move is [piece name][cell1]-[cell2], that is, pe2-e3.   
+The usual move is [piece name][cell1]-[cell2], that is, re2-e3, exception pawn them e2-e3.     
 Short castling: 0-0.   
 Long castling: 0-0-0.   
 Checkers notation:   
