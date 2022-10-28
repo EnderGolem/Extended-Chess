@@ -1,8 +1,8 @@
 # ExtendedChess
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/Extended_chess`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+## Desription
+A gem for creating custom games like chess. With the creation of their figures, fields and rules.
+The gem implements checkers, chess and giveaways and the Mongols setup.
 
 ## Installation
 
@@ -21,8 +21,15 @@ Or install it yourself as:
     $ gem install Extended_chess
 
 ## Usage
-
-TODO: Write usage instructions here
+To interact with the examples, initialize the interface class and use the start procedure.
+To add new boards, move rules, figure setups and mods, use the add_board, add_movement_rule, add_piece, add_setup, add_mode procedures.
+##Нотации
+Notations in chess:
+The usual move is [piece name][cell1]-[cell2], that is, pe2-e3.
+Short castling: 0-0.
+Long castling: 0-0-0.
+Checkers notation:
+The usual move is [piece name][cell1]-[cell2], that is, me2-e3.
 
 ## Development
 

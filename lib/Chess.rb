@@ -82,6 +82,12 @@ class Chess
           %w[Pawn Pawn Pawn Pawn Pawn Pawn Pawn Pawn]
         ]
       )
+      @setups['Mongols'] = Setup.new('Classic',
+                                     [
+                                       %w[!Knight !Knight !Knight !Knight !Knight !Knight !Knight !Knight],
+                                       %w[!Knight !Knight !Knight !Knight !Knight !Knight !Knight !Knight]
+                                     ]
+      )
       @setups['test1'] = Setup.new('test1',
         [[nil, nil, nil, nil],
                  [ nil,'!Man',nil ,nil]]
@@ -107,7 +113,7 @@ class Chess
       @modes['Classic'] = Mode.new(@boards['Square8x8'],
                                    [Spawner.new(Vector[0,0],Vector[1,0],Vector[0,1]),
                                     Spawner.new(Vector[7,0],Vector[-1,0],Vector[0,1])],
-                                   2,2,['Classic'],
+                                   2,2,['Classic','Mongols','Checkers'],
                                    [@end_game_conditions['Chiefs_lost']],
                                    [@end_game_conditions["All_opponents_lost"]])
       @modes['Giveaway'] = Mode.new(@boards['Square8x8'],
