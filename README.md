@@ -2,7 +2,7 @@
 
 ## Desription
 A gem for creating custom games like chess. With the creation of their figures, fields and rules.
-The gem implements checkers, chess and giveaways and the Mongols setup.
+The gem implements checkers, chess and the Mongols setup.
 
 ## Installation
 
@@ -21,7 +21,9 @@ Or install it yourself as:
     $ gem install Extended_chess
 
 ## Usage
-To interact with the examples, initialize the interface class and use the start procedure.
+To interact with the examples, initialize the interface class and use the start procedure.  
+To create a game directly without an interface, you need to create a variable of type Mode and call the make_game procedure.  
+In order to move the shapes, you need to call the step procedure!(notation) and notation in the correct format, then only one move will take place.  
 To add new boards, move rules, figure setups and mods, use the add_board, add_movement_rule, add_piece, add_setup, add_mode procedures.
 
 ## Notations  
