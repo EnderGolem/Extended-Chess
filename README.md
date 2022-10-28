@@ -23,13 +23,14 @@ Or install it yourself as:
 ## Usage
 To interact with the examples, initialize the interface class and use the start procedure.
 To add new boards, move rules, figure setups and mods, use the add_board, add_movement_rule, add_piece, add_setup, add_mode procedures.
-##Нотации
-Notations in chess:
-The usual move is [piece name][cell1]-[cell2], that is, pe2-e3.
-Short castling: 0-0.
-Long castling: 0-0-0.
-Checkers notation:
-The usual move is [piece name][cell1]-[cell2], that is, me2-e3.
+
+## Notations  
+Notations in chess:  
+The usual move is [piece name][cell1]-[cell2], that is, pe2-e3.   
+Short castling: 0-0.   
+Long castling: 0-0-0.   
+Checkers notation:   
+The usual move is [piece name][cell1]-[cell2], that is, me2-e3.   
 
 ## Development
 
